@@ -5,6 +5,7 @@ import { RobotModel } from './robot/RobotModel.js';
 import { Kinematics } from './robot/Kinematics.js';
 import { ROBOT_CONFIG } from './robot/robot3Config.js';
 import { verifyRobotFK } from './robot/verifyRobotFK.js';
+import { TeachingBox } from './ui/TeachingBox.js';
 import './style.css';
 
 const $ = selector => document.querySelector(selector);
@@ -146,11 +147,12 @@ async function start() {
 
   function setState(next) {
     if (!['ENABLED', 'DISABLED', 'ESTOP'].includes(next)) throw new TypeError('未知控制状态');
-    // 急停只能显式复位；A 的滑块/使能事件不能直接清除急停。
-    if (state === 'ESTOP' && next !== 'ESTOP') return;
+    // 急停只能先显式复位到失能，不能由普通“使能”直接清除。
+    if (state === 'ESTOP' && next === 'ENABLED') return state;
     state = next;
     if (state !== 'ENABLED') stopMotion();
     refreshState();
+    return state;
   }
 
   function refreshState() {
@@ -162,6 +164,7 @@ async function start() {
     $('#zero').disabled = state !== 'ENABLED';
     $('#demo').disabled = state !== 'ENABLED';
     debugRows.forEach(({ range, number }) => { range.disabled = number.disabled = state !== 'ENABLED'; });
+    team.teachingBox?.syncState?.(state);
   }
 
   $('#zero').addEventListener('click', () => applyAngles([0, 0, 0, 0, 0, 0]));
@@ -169,7 +172,7 @@ async function start() {
   $('#axes').addEventListener('change', event => { baseAxes.visible = flangeAxes.visible = event.target.checked; });
   $('#enable').addEventListener('click', () => setState(state === 'ENABLED' ? 'DISABLED' : 'ENABLED'));
   $('#estop').addEventListener('click', () => setState('ESTOP'));
-  $('#reset-estop').addEventListener('click', () => { state = 'DISABLED'; refreshState(); });
+  $('#reset-estop').addEventListener('click', () => setState('DISABLED'));
   $('#demo').addEventListener('click', () => {
     if (demo) { stopMotion(); return; }
     if (state !== 'ENABLED') return;
@@ -212,6 +215,8 @@ async function start() {
     if (modules.teachingBox) {
       modules.teachingBox.onJointChange(applyAngles);
       modules.teachingBox.onStateChange(setState);
+      modules.teachingBox.syncSliders(robot.getJointAngles());
+      modules.teachingBox.syncState?.(state);
     }
     lastSampleTime = elapsed;
     lastSamplePosition = undefined;
@@ -274,10 +279,18 @@ async function start() {
     // 为 B 提供法兰引用，为 A/C 提供共享模块上下文。
     flange: robot.flange,
   };
+
+  const teachingBoxContainer = document.createElement('div');
+  teachingBoxContainer.id = 'teaching-box-container';
+  viewport.append(teachingBoxContainer);
+  const teachingBox = new TeachingBox(teachingBoxContainer, robot.jointLimits);
+  connectTeamModules({ teachingBox });
+  $('#module-A').textContent = '已接入 · 已联调';
+
   updateReadout();
   refreshState();
   runVerification();
-  status.textContent = '模型已就绪 · 六关节可控 · WebGL2';
+  status.textContent = '模型与示教器已就绪 · 六关节可控 · WebGL2';
   status.className = 'status ready';
   $('#model-loading').hidden = true;
   requestAnimationFrame(animate);

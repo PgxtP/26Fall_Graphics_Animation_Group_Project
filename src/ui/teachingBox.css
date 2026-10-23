@@ -1,15 +1,285 @@
 /* 【2号位负责】示教器交互面板样式表 (src/ui/teachingBox.css) */
 
 .teaching-box {
-  position: fixed;
+  position: absolute;
   top: 1.25rem;
   right: 1.25rem;
-  width: 22rem;
+  width: min(22rem, calc(100vw - 2.5rem));
+  max-height: calc(100% - 2.5rem);
+  overflow-y: auto;
+  box-sizing: border-box;
   padding: 1.25rem;
   border-radius: 0.85rem;
   background: rgb(7 16 31 / 82%);
   border: 1px solid rgb(155 202 255 / 20%);
   color: #ecf5ff;
   backdrop-filter: blur(16px);
+  box-shadow: 0 1rem 2.5rem rgb(0 0 0 / 24%);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   z-index: 10;
+}
+
+.teaching-box,
+.teaching-box * {
+  box-sizing: border-box;
+}
+
+.teaching-box [hidden] {
+  display: none;
+}
+
+.teaching-box__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.teaching-box__title {
+  margin: 0;
+  font-size: 1.1rem;
+  line-height: 1.35;
+  letter-spacing: 0.04em;
+}
+
+.teaching-box__state {
+  flex: none;
+  padding: 0.28rem 0.5rem;
+  border-radius: 999px;
+  background: rgb(50 181 142 / 16%);
+  color: #75e1bd;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.teaching-box[data-state="DISABLED"] .teaching-box__state {
+  background: rgb(237 182 76 / 16%);
+  color: #ffd077;
+}
+
+.teaching-box[data-state="ESTOP"] .teaching-box__state {
+  background: rgb(255 84 84 / 18%);
+  color: #ff8e8e;
+}
+
+.teaching-box__section-title {
+  margin: 0 0 0.65rem;
+  color: #b9cce0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.teaching-box__joints {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.joint-control {
+  display: grid;
+  gap: 0.42rem;
+}
+
+.joint-control__header,
+.joint-control__fields,
+.joint-control__number-field {
+  display: flex;
+  align-items: center;
+}
+
+.joint-control__header {
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.joint-control__name {
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.joint-control__limit {
+  color: #9eb3ca;
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.joint-control__fields {
+  gap: 0.75rem;
+}
+
+.joint-control__slider {
+  min-width: 0;
+  flex: 1;
+  margin: 0;
+  accent-color: #53a8ff;
+  cursor: pointer;
+}
+
+.joint-control__number-field {
+  width: 5.75rem;
+  min-height: 2rem;
+  overflow: hidden;
+  border: 1px solid rgb(155 202 255 / 28%);
+  border-radius: 0.45rem;
+  background: rgb(255 255 255 / 8%);
+}
+
+.joint-control__number {
+  width: 100%;
+  min-width: 0;
+  padding: 0.35rem 0.15rem 0.35rem 0.5rem;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.joint-control__number:focus {
+  box-shadow: inset 0 0 0 2px #53a8ff;
+}
+
+.joint-control__unit {
+  padding: 0 0.48rem 0 0.2rem;
+  color: #b9cce0;
+  font-size: 0.8rem;
+}
+
+.teaching-box__section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgb(155 202 255 / 16%);
+}
+
+.teaching-box__button-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.teaching-box__button {
+  flex: 1;
+  min-width: 0;
+  padding: 0.5rem 0.4rem;
+  border: 1px solid rgb(155 202 255 / 30%);
+  border-radius: 0.45rem;
+  background: rgb(255 255 255 / 9%);
+  color: #ecf5ff;
+  font: inherit;
+  font-size: 0.76rem;
+  cursor: pointer;
+}
+
+.teaching-box__button:hover:not(:disabled) {
+  background: rgb(255 255 255 / 16%);
+}
+
+.teaching-box__button:disabled,
+.teaching-box input:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.teaching-box__button--danger {
+  border-color: rgb(255 104 104 / 55%);
+  background: rgb(171 32 32 / 30%);
+  color: #ffb1b1;
+}
+
+.teaching-box__state-message {
+  min-height: 1rem;
+  margin: 0.55rem 0 0;
+  color: #9eb3ca;
+  font-size: 0.7rem;
+}
+
+.teaching-box__speed {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr) 2.75rem;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 0.75rem;
+  color: #c6d7e8;
+  font-size: 0.75rem;
+}
+
+.teaching-box__speed input {
+  width: 100%;
+  margin: 0;
+  accent-color: #53a8ff;
+}
+
+.teaching-box__speed-value {
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.teaching-box__position-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.teaching-box__position-grid > div {
+  min-width: 0;
+  padding: 0.55rem;
+  border-radius: 0.45rem;
+  background: rgb(255 255 255 / 7%);
+}
+
+.teaching-box__position-grid span {
+  display: block;
+  margin-bottom: 0.3rem;
+  color: #8fa8c0;
+  font-size: 0.62rem;
+}
+
+.teaching-box__position-grid strong {
+  display: block;
+  overflow: hidden;
+  color: #fff;
+  font-family: Consolas, "Microsoft YaHei", monospace;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-overflow: ellipsis;
+}
+
+.teaching-box__pose-details {
+  margin: 0.65rem 0 0;
+  font-size: 0.68rem;
+}
+
+.teaching-box__pose-details > div {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.75rem;
+  padding: 0.22rem 0;
+}
+
+.teaching-box__pose-details dt {
+  color: #8fa8c0;
+}
+
+.teaching-box__pose-details dd {
+  min-width: 0;
+  margin: 0;
+  color: #d8e7f5;
+  font-family: Consolas, "Microsoft YaHei", monospace;
+  overflow-wrap: anywhere;
+  text-align: right;
+}
+
+@media (max-width: 40rem) {
+  .teaching-box {
+    top: 0.75rem;
+    right: 0.75rem;
+    width: min(22rem, calc(100vw - 1.5rem));
+    max-height: calc(100% - 1.5rem);
+  }
 }
