@@ -82,7 +82,7 @@
 ## 🚀 本地快速启动指南
 
 ### 1. 克隆仓库并安装依赖
-需提前安装 [Node.js](https://nodejs.org/)（建议 v18+）：
+需提前安装 [Node.js](https://nodejs.org/)（要求 ^20.19.0 或 >=22.12.0，本次验证使用 v24.20.0）：
 
 ```powershell
 git clone https://github.com/PgxtP/26Fall_Graphics_Animation_Group_Project.git
@@ -102,3 +102,16 @@ npm run dev
 ```powershell
 npm run build
 ```
+
+
+## 组长模块进度（2026-10-23）
+
+组长的真实机械臂场景、六关节驱动与限位、TCP 位姿、纯数学 FK 和第 1 章报告已完成。页面提供组长调试入口、113 组 FK 验证和 JSON 导出。
+
+- [第 1 章报告与验证结果](实验报告/第1章_模型解析与正向运动学验证.md)
+- [组长实现与 A/B/C/D 接入说明](作业文档与分工/组长实现与联调说明.md)
+- [原始数据与实测截图](实验报告/组长材料/)
+
+npm run verify:leader 可复现 113 组姿态及 10 项边界检查；npm run robot:extract 用于从课程 GLB 重新生成数值配置。
+
+实际 A/B/C/D 模块仍为骨架，正式全流程联调待其交付。联动演示用于模型验收，不代表 MOVJ 示教程序或全组四项作业已完成。长度保留资产原始数值，尚未做真机尺度标定。

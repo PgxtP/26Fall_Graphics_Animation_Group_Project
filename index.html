@@ -1,34 +1,52 @@
 <!doctype html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="图形与动画 I WebGL 环境验证页" />
-    <link rel="icon" href="data:," />
-    <title>WebGL 环境验证</title>
-  </head>
-  <body>
-    <canvas id="scene" aria-label="three.js 三维场景"></canvas>
-    <main class="panel">
-      <p class="eyebrow">图形与动画 I</p>
-      <h1>WebGL 环境已启动</h1>
-      <p id="status" class="status">正在检查 WebGL2...</p>
-      <dl>
-        <div>
-          <dt>three.js</dt>
-          <dd>r186</dd>
-        </div>
-        <div>
-          <dt>交互</dt>
-          <dd>拖动旋转，滚轮缩放</dd>
-        </div>
-        <div>
-          <dt>动画</dt>
-          <dd>使用 Δt，与帧率无关</dd>
-        </div>
-      </dl>
-      <p class="hint">环境和模型加载结果会显示在上方状态栏。</p>
-    </main>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="机械臂仿真实验一：组长模型与运动学验证工作台">
+  <link rel="icon" href="data:,">
+  <title>机械臂仿真 · 模型与运动学</title>
+</head>
+<body>
+  <header class="topbar">
+    <div><p class="eyebrow">图形与动画 / 实验一</p><h1>机械臂仿真<span>模型与运动学工作台</span></h1></div>
+    <p id="status" class="status" role="status">正在加载机械臂模型…</p>
+  </header>
+  <main class="workspace">
+    <section id="viewport" aria-label="机械臂三维视图">
+      <canvas id="scene" aria-label="六关节机械臂三维场景"></canvas>
+      <div class="view-tools"><button id="fit">重置视角</button><label><input id="axes" type="checkbox" checked> 坐标轴</label></div>
+      <div id="model-loading" class="loading">正在读取课程模型…</div>
+      <div class="view-caption"><span class="dot"></span> ROBOT 03 / 6 DOF <small>拖动旋转 · 滚轮缩放 · 右键平移</small></div>
+      <div class="axis-key"><b class="x">X</b><b class="y">Y ↑</b><b class="z">Z</b> 右手坐标系</div>
+    </section>
+    <aside class="sidebar">
+      <section class="control-section">
+        <div class="section-title"><h2>关节调试</h2><span id="state" data-state="ENABLED">已使能</span></div>
+        <p class="muted">组长验收入口 · 界面 ° / 接口 rad</p>
+        <div id="joint-controls"></div>
+        <div class="button-row"><button id="zero">全部归零</button><button id="demo">关节联动演示</button></div>
+        <div class="button-row safety"><button id="enable">失能</button><button id="estop" class="danger">急停</button><button id="reset-estop" hidden>复位急停</button></div>
+        <p id="feedback" class="feedback" role="status">已启用模型软限位保护</p>
+      </section>
+      <section class="control-section">
+        <div class="section-title"><h2>末端位姿</h2><span class="tag">法兰 / TCP</span></div>
+        <div class="position-grid"><div><small>X / m</small><strong id="tcp-x">—</strong></div><div><small>Y / m</small><strong id="tcp-y">—</strong></div><div><small>Z / m</small><strong id="tcp-z">—</strong></div></div>
+        <dl class="pose-details"><div><dt>RPY / ZYX</dt><dd id="tcp-rpy">—</dd></div><div><dt>四元数 xyzw</dt><dd id="tcp-quaternion">—</dd></div><div><dt>实时 FK 矩阵误差</dt><dd id="live-error">—</dd></div></dl>
+        <p class="muted unit-note">保留 glTF 米制尺寸，尚未做真机尺度标定。默认末端为法兰原点；可接入工具偏置。</p>
+      </section>
+      <section class="control-section">
+        <div class="section-title"><h2>FK 精度验证</h2><span id="fk-summary">等待验证</span></div>
+        <p class="muted">零位 + 逐关节 ±90° + 100 组随机姿态</p>
+        <dl class="pose-details"><div><dt>最大位置误差</dt><dd id="fk-position">—</dd></div><div><dt>最大矩阵元素误差</dt><dd id="fk-max">—</dd></div><div><dt>验收阈值</dt><dd>&lt; 10⁻⁶</dd></div></dl>
+        <div class="button-row"><button id="verify">重新验证</button><button id="export-fk" class="primary">导出验证数据</button></div>
+      </section>
+      <section class="control-section modules">
+        <div class="section-title"><h2>小组模块接入</h2><span class="tag">A—D</span></div>
+        <dl class="pose-details"><div><dt>A · 示教器</dt><dd id="module-A">待组员交付</dd></div><div><dt>B · 标定 / 工位</dt><dd id="module-B">待组员交付</dd></div><div><dt>C · MOVJ</dt><dd id="module-C">待组员交付</dd></div><div><dt>D · 图表分析</dt><dd id="module-D">待组员交付</dd></div></dl>
+      </section>
+    </aside>
+  </main>
+  <script type="module" src="/src/main.js"></script>
+</body>
 </html>

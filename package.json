@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
-    "preview": "vite preview --host 127.0.0.1"
+    "preview": "vite preview --host 127.0.0.1",
+    "verify:leader": "node scripts/verify-leader.mjs",
+    "robot:extract": "node scripts/extract-robot-config.mjs"
   },
   "dependencies": {
     "three": "0.186.0"

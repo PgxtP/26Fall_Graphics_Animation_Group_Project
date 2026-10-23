@@ -1,0 +1,82 @@
+{
+  "checks": [
+    {
+      "name": "真实 WebGL2、11 个模型网格及 113 组浏览器 FK",
+      "passed": true,
+      "detail": {
+        "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+        "meshes": 11,
+        "fk": 113
+      }
+    },
+    {
+      "name": "六关节角度输入、弧度换算与位姿刷新",
+      "passed": true,
+      "detail": [
+        0.5235987755982988,
+        -0.4363323129985824,
+        0.2617993877991494,
+        0.3490658503988659,
+        -0.17453292519943295,
+        0.6108652381980153
+      ]
+    },
+    {
+      "name": "超限数值钳制到 J2 +120°",
+      "passed": true,
+      "detail": true
+    },
+    {
+      "name": "关节滑块交互",
+      "passed": true,
+      "detail": true
+    },
+    {
+      "name": "急停冻结、禁用控件并拦截调用",
+      "passed": true,
+      "detail": true
+    },
+    {
+      "name": "复位后需重新使能且不自动恢复动作",
+      "passed": true,
+      "detail": true
+    },
+    {
+      "name": "113 组验证结果可从界面下载 JSON",
+      "passed": true,
+      "detail": true
+    },
+    {
+      "name": "OrbitControls 鼠标旋转和滚轮缩放",
+      "passed": true,
+      "detail": true
+    },
+    {
+      "name": "测试替身：播放器最终帧、示教器反向同步、采样接口",
+      "passed": true,
+      "detail": {
+        "samples": 7
+      }
+    },
+    {
+      "name": "1000×760 与 390×844 自适应、相机宽高比及无横向溢出",
+      "passed": true,
+      "detail": {
+        "aspect": 0.8251785241999471,
+        "width": 390,
+        "height": 472.625,
+        "doc": 390,
+        "window": 390
+      }
+    },
+    {
+      "name": "浏览器控制台 0 错误 / 0 警告，HTTP 失败 0",
+      "passed": true,
+      "detail": true
+    }
+  ],
+  "errors": [],
+  "warnings": [],
+  "badResponses": [],
+  "url": "http://127.0.0.1:5183/"
+}
