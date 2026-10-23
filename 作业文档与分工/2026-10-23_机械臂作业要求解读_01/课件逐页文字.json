@@ -1,0 +1,196 @@
+[
+  {
+    "slide": 1,
+    "text": "计算机图形与动画 · 机械臂仿真实验系列\n实验一 · 8 学时\n机械臂仿真（一）\n模型导入 · 关节运动控制 · 示教器界面\n课程模块 CM11　|　支撑课程目标 CO4（服务 CO1 / CO3）\n01　Three.js / WebGL 开发环境与调试工具链\n02　URDF / GLTF 模型解析与场景树组织\n03　正 / 逆运动学（FK · IK）基础\n04　关节限位与实时姿态驱动\n05　示教器交互编程与轨迹 / 可达区域分析\n末端执行器 · TCP\n实验平台：Three.js / WebGL · 模型：UR5 / KUKA iiwa（URDF / GLTF）",
+    "images": [
+      "../media/image1.png"
+    ]
+  },
+  {
+    "slide": 2,
+    "text": "实验一 · 机械臂仿真（一）\n学习路线\n三个实验是一条进阶线：先让模型动起来\n实验一 · 本实验（8 学时）\n基础：系统与示教\n机械臂与示教器 · 正 / 逆运动学 · 示教器交互与编程 · 轨迹与可达区域分析\n实验二（10 学时）\n进阶：运动与指令\n逆运动学 · 轨迹插值 · 碰撞检测 · TCP / 手眼校正 · 虚拟指令集\n实验三（10 学时）\n综合：规划与避障\n智能网关 · A* / RRT · 抓取与环绕拍摄\n学完本实验，你应当能够——\n□ 说明机械臂系统（本体 + 示教器）的组成与工作方式\n□ 解释 FK / IK 的基本问题与关节 / 笛卡尔空间的映射\n□ 在示教器界面完成交互操作与工具 / 用户坐标系标定\n□ 用 MOVJ 指令编排多位姿动作程序并连续执行\n□ 完成末端轨迹与可达区域的定量分析\n为什么从它开始？\n模型导入与关节控制覆盖 WebGL 环境搭建、场景树管理与正向运动学等图形学核心概念，是后续运动解算与路径规划的前提，在工业机器人仿真、数字孪生等领域有直接应用。\n参考：实验项目规划信息 · 实验 1 选定原则\n机械臂仿真实验讲义 · 实验一\n02 / 27",
+    "images": []
+  },
+  {
+    "slide": 3,
+    "text": "实验一 · 机械臂仿真（一）\n背景与动机\n为什么先在浏览器里造一台\"虚拟机械臂\"\n仿真的工程价值\n零风险试错：奇异位形、超限、碰撞在真机上意味着停机甚至事故，在浏览器里只是一次刷新。\n算法先行：运动学、插值、路径规划全部可在仿真中验证后再部署到真机——这正是工业机器人离线编程（OLP）的标准流程。\n人人可及：Three.js/WebGL 免安装、跨平台，一台能开浏览器的电脑就是实验室。\n直接应用场景\n· 数字孪生：虚拟产线与真实产线同步运行\n· 机器人离线编程与节拍评估\n· 教学与培训：示教编程范式的低成本演练\n一个机械臂操作系统的\"解剖\"\n感知 Perception：相机、力矩传感器 → 场景状态\n规划 Planning：运动学、轨迹、避障 → 关节指令\n控制 Control：伺服回路 → 关节力矩 / 角度\n本实验位置：搭建虚拟的\"机械臂本体 + 示教器\"，为上面三层提供实验对象。\n参考：MIT 6.4210 Robotic Manipulation, Lecture 1\n机械臂仿真实验讲义 · 实验一\n03 / 27",
+    "images": []
+  },
+  {
+    "slide": 4,
+    "text": "",
+    "images": [
+      "../media/image2.png"
+    ]
+  },
+  {
+    "slide": 5,
+    "text": "实验一 · 机械臂仿真（一）\n原理介绍 · 机械臂介绍\n机械臂系统组成：机械臂本体 + 示教器\n机械臂本体 Manipulator\n基座 Base：固定本体，J1 腰关节带动全臂回转\n大臂 / 小臂：J2、J3 俯仰摆动，决定末端能到“哪里”\n腕部 Wrist：J4–J6 三个回转关节，决定末端工具“朝向”\n末端执行器 · TCP：夹爪 / 焊枪 / 吸盘等，作业的最终落点\n图：实验用关节化模型的六个连杆（按连杆分色）\n示教器 Teach Pendant\nEFORT 工业示教器\n触屏 + 按键 + 急停（右上红色）+ 三位使能开关，是人与机器人对话的终端。\n点动 Jog：在关节 / 笛卡尔坐标下微动，粗调姿态\n示教编程：记录 pose 位姿，编排 MOVJ / MOVL 程序并执行\n坐标系管理：标定工具坐标系（TCP）与用户坐标系\n安全三件套：急停、使能开关、速度倍率\n本实验即在浏览器中复刻这套“本体 + 示教器”最小系统\n机械臂仿真实验讲义 · 实验一\n04 / 27",
+    "images": [
+      "../media/image3.png",
+      "../media/image1.png"
+    ]
+  },
+  {
+    "slide": 6,
+    "text": "实验一 · 机械臂仿真（一）\n机构学基础\n认识机械臂：关节、自由度与常见构型\n两种基本关节（运动副）\n转动关节 Revolute\n两连杆绕固定轴相对旋转，又称铰链关节。工业臂与人类手臂的主力关节。\n平移关节 Prismatic\n两连杆沿固定轴相对滑动。常见于直角坐标机器人与升降机构。\n自由度（DOF）＝确定机构位形所需的独立关节变量数。每个基本关节贡献 1 个自由度；本实验的 UR5 / iiwa 均为 6~7 自由度串联臂。\n有趣的事实：所有生物的骨骼关节都是转动型的——自然界不存在平移关节（Asada, Ch.3）。这也是\"机械臂像手臂\"的根本原因。\n五种经典机械臂构型\n构型\n关节组合\n特点\n直角坐标型\nP P P\n精度高、工作空间为长方体\n圆柱坐标型\nR P P\n绕立柱旋转 + 径向伸缩\n球坐标型\nR R P\n球面工作空间\nSCARA\nR R P\n平面内快、Z 向刚，适合装配\n关节型（本实验）\nR R R…\n最灵活，工作空间近似球壳\nR = 转动关节，P = 平移关节。关节型臂（articulated / elbow robot）三个主关节全为转动副，像人的肩—肘—腕，能以最小占地获得最大可达空间。\n参考：H. Asada《Introduction to Robotics》Chapter 3\n机械臂仿真实验讲义 · 实验一\n05 / 27",
+    "images": []
+  },
+  {
+    "slide": 7,
+    "text": "实验一 · 机械臂仿真（一）\n坐标系与变换\n位姿的数学语言：旋转表示与齐次变换\n旋转的四种表示，各司其职\n表示法\n优点\n风险 / 用途\n旋转矩阵 R\n直接参与矩阵运算\n9 个数存 3 个自由度，计算主力\nRPY 欧拉角\n直观、人机界面友好\n存在万向节锁，插值不平滑\n轴角 Axis-angle\n几何意义清晰\n标定与误差分析常用\n四元数\n无奇点、适合插值\n不直观；存储 / 网络传输首选\n万向节锁（Gimbal Lock）\n当欧拉角中间轴转到 ±90°，第一轴与第三轴共线，系统瞬时丢失一个旋转自由度——云台\"打结\"就是这种现象。结论：示教器界面可以用 RPY 显示，内部计算与插值必须用矩阵或四元数。\n齐次变换矩阵：位置 + 姿态一体化\n𝑇=𝑅𝑝01∈𝑆𝐸(3) \nR ∈ SO(3) 为 3×3 旋转矩阵，p ∈ ℝ³ 为平移向量。T 同时回答\"朝向哪、在哪里\"。\n\\(T=\\begin{bmatrix} R & p \\\\ 0 & 1 \\end{bmatrix}\\in SE(3)\\)\nR ∈ SO(3) 为 3×3 旋转矩阵，p ∈ ℝ³ 为平移向量。T 同时回答\"朝向哪、在哪里\"。\n变换链：从基座到末端\n0𝑇𝑛=0𝑇1 1𝑇2⋯𝑛−1𝑇𝑛 \n左乘顺序：从基座向末端逐级复合；逆变换按相反顺序取逆。\n\\({}^{0}T_{n}={}^{0}T_{1}\\,{}^{1}T_{2}\\cdots{}^{n-1}T_{n}\\)\n左乘顺序：从基座向末端逐级复合；逆变换按相反顺序取逆。\n记号约定：𝐴𝑝𝐵 表示点 B 在坐标系 A 中的坐标；𝐴𝑇𝐵 表示 B 系相对 A 系的位姿。\n写代码前先写清每个量的上下标，90% 的\"位姿算错\"源于坐标系没对齐。\n机械臂仿真实验讲义 · 实验一\n06 / 27",
+    "images": [
+      "../media/image20.png"
+    ]
+  },
+  {
+    "slide": 8,
+    "text": "实验一 · 机械臂仿真（一）\n坐标系与变换\n归一化关节坐标系：平移 → 定轴 → 关节角\n每个关节节点的三级分解\n① 纯平移 t_j\n枢轴在父系中的位置，加工期已烘焙为常量\n② 定轴 R_fix\n常量旋转，使局部 +Z = 运动轴方向\n③ 关节角 Z(θ_j)\n绕局部 +Z 右手定则，是唯一变量\nFK 递推：与场景树 matrixWorld 同构\n𝑝𝑜𝑠𝑗=𝑝𝑜𝑠𝑗−1+𝑊𝑗−1 𝑡𝑗 \n𝑊𝑗=𝑊𝑗−1 𝑅𝑗𝑓𝑖𝑥 𝑍(𝜃𝑗) \n\\(pos_j = pos_{j-1} + W_{j-1}\\,t_j\\)\n\\(W_j = W_{j-1}\\,R^{fix}_j\\,Z(\\theta_j)\\)\nW 为世界旋转矩阵。t_j、R_fix 均为常量，只有 θ_j 随时间变化——这正是\"joint 变换归一、变换下沉到 mesh\"之后，运动学里剩下的全部内容。Three.js 每帧沿场景树重算 matrixWorld，等价于替我们执行这条递推。\n五关节局部 +Z 的世界方向（零位）\n关节\n局部 +Z 世界方向\n角色\nJ1\n(−1, 0, 0)\n肩俯仰\nJ2\n(+1, 0, 0)\n肘俯仰\nJ3\n(0, 0.883, 0.469)\n肘横摆·前倾 28°\nJ4\n(−1, 0, 0)\n腕俯仰\nJ5\n(0, −1, 0)\n法兰卷绕\n读表方法：J1 / J2 / J4 三轴共线（±X），同步转动只在一个平面内摆臂；J3 与它们近似正交并前倾 28°，负责让手臂偏离平面工作；J5 沿 −Y，纯卷绕。\n数据：assets/joint_map.json（rfix_quat_wxyz 换算）\n机械臂仿真实验讲义 · 实验一\n07 / 27",
+    "images": []
+  },
+  {
+    "slide": 9,
+    "text": "实验一 · 机械臂仿真（一）\n正向运动学\n正向运动学：从关节角到末端位姿\n正向运动学（FK）：给定关节向量 𝑞=(𝜃1,⋯,𝜃𝑛)，求末端执行器在基座坐标系中的位姿 0𝑇𝑛=𝑓(𝑞)。每个关节贡献一个 4×4 齐次变换，逐级连乘即得答案。\n正向运动学（FK）：给定关节向量 \\(q=(\\theta_1,\\dots,\\theta_n)\\)，求末端执行器在基座坐标系中的位姿 \\({}^{0}T_{n}=f(q)\\)。每个关节贡献一个 4×4 齐次变换，逐级连乘即得答案。\nDH 参数法：四个参数描述一级关节\n参数\n含义\n绕 / 沿哪个轴\nθᵢ\n关节角（变量）\n绕 zᵢ₋₁ 轴\ndᵢ\n连杆偏距\n沿 zᵢ₋₁ 轴\naᵢ\n连杆长度\n沿 xᵢ 轴\nαᵢ\n连杆扭角\n绕 xᵢ 轴\n𝑖−1𝑇𝑖=𝑅𝑜𝑡(𝑧,𝜃𝑖) 𝑇𝑟𝑎𝑛𝑠(𝑧,𝑑𝑖) 𝑇𝑟𝑎𝑛𝑠(𝑥,𝑎𝑖) 𝑅𝑜𝑡(𝑥,𝛼𝑖) \n\\({}^{i-1}T_{i}=Rot(z,\\theta_i)\\,Trans(z,d_i)\\,Trans(x,a_i)\\,Rot(x,\\alpha_i)\\)\n0𝑇𝑛(𝑞)=0𝑇1(𝜃1) 1𝑇2(𝜃2)⋯𝑛−1𝑇𝑛(𝜃𝑛) \n改进 DH（Modified DH）变换顺序不同，建模时务必与所用模型库的约定保持一致。\n\\({}^{0}T_{n}(q)={}^{0}T_{1}(\\theta_1)\\,{}^{1}T_{2}(\\theta_2)\\cdots{}^{n-1}T_{n}(\\theta_n)\\)\n改进 DH（Modified DH）变换顺序不同，建模时务必与所用模型库的约定保持一致。\n另一种等价视角：指数积（PoE）\nModern Robotics 采用旋量理论：把每个关节看作一根螺旋轴 𝑆𝑖，FK 写成矩阵指数的乘积 𝑇(𝑞)=𝑒[𝑆1]𝜃1⋯𝑒[𝑆𝑛]𝜃𝑛𝑀。与 DH 结果完全一致，但无需人为建立连杆坐标系。\n实验只要求掌握 DH；PoE 供学有余力的同学延伸阅读。\nModern Robotics 采用旋量理论：把每个关节看作一根螺旋轴 \\(S_i\\)，FK 写成矩阵指数的乘积 \\(T(q)=e^{[S_1]\\theta_1}\\cdots e^{[S_n]\\theta_n}M\\)。与 DH 结果完全一致，但无需人为建立连杆坐标系。\n实验只要求掌握 DH；PoE 供学有余力的同学延伸阅读。\n课堂练习（必做）\n查 UR5 官方 DH 参数表，手算全零位形 𝑞=0 下的末端位姿；随后在仿真器中将所有关节置 0，对比场景树输出的 matrixWorld——两者应一致（容差 1e-6）。\n这是实验一 FK 验证的基准测试，写进实验报告。\n查 UR5 官方 DH 参数表，手算全零位形 \\(q=\\mathbf{0}\\) 下的末端位姿；随后在仿真器中将所有关节置 0，对比场景树输出的 matrixWorld——两者应一致（容差 1e-6）。\n这是实验一 FK 验证的基准测试，写进实验报告。\n机械臂仿真实验讲义 · 实验一\n08 / 27",
+    "images": []
+  },
+  {
+    "slide": 10,
+    "text": "",
+    "images": [
+      "../media/image4.jpeg",
+      "../media/image5.png"
+    ]
+  },
+  {
+    "slide": 11,
+    "text": "",
+    "images": [
+      "../media/image6.png",
+      "../media/image4.jpeg"
+    ]
+  },
+  {
+    "slide": 12,
+    "text": "",
+    "images": [
+      "../media/image7.png",
+      "../media/image4.jpeg"
+    ]
+  },
+  {
+    "slide": 13,
+    "text": "实验一 · 机械臂仿真（一）\n原理介绍 · 逆向运动学\n逆向运动学：从末端位姿反求关节角\nFK 与 IK：一对互逆问题\nFK 正向运动学：已知关节角 q → 求末端位姿 x。齐次矩阵连乘，解唯一——上一节已完成。\nIK 逆向运动学：已知末端位姿 x → 反求关节角 q。本质是解三角方程组，可能无解、多解，冗余臂甚至无穷多解。\n为什么示教编程离不开 IK：操作者关心的是“末端去哪”，关节角只是手段；画圆、直线扫描等笛卡尔动作，必须在位姿空间插值后逐点求 IK。\n多组解里选哪一解？\n· 行程最短：选离当前关节角最近的解\n· 避奇异：远离雅可比降秩的位形\n· 避障碍 / 避限位：按作业场景施加约束\n同一目标，多组解\n平面 2R 臂对同一目标点给出“肘上 / 肘下”两组解；6R 工业臂同一 TCP 位姿最多可达 16 组解（肩 / 肘 / 腕三处翻转的组合）。\n参考：Lynch & Park《Modern Robotics》Chapter 6\n机械臂仿真实验讲义 · 实验一\n09 / 27",
+    "images": [
+      "../media/image8.png"
+    ]
+  },
+  {
+    "slide": 14,
+    "text": "实验一 · 机械臂仿真（一）\n原理介绍 · 逆向运动学\nIK 怎么解：解析法与数值迭代\n两条求解路线\n解析法（几何 / 代数）\n利用 Pieper 准则（三相邻轴交于一点）拆分为位置 + 姿态两级求解，直接给出全部解。快而精确，是工业 6R 臂控制器的标配。\n数值法（迭代）\n雅可比伪逆 / 阻尼最小二乘（DLS），从当前关节角出发迭代逼近。通用、不限构型，但依赖初值且需处理奇异。\n奇异位形 Singularity：J(q) 降秩时，微小的笛卡尔运动将要求无穷大的关节速度——DLS 引入阻尼因子 λ，以精度换稳定。\n回到示教编程：MOVJ 在关节空间插值，点到点无需 IK；画圆 / 360° 扫描等笛卡尔动作要先对路径点逐点求 IK——这正是实验要求 b 背后的计算。\n阻尼最小二乘（DLS）迭代\n// 阻尼最小二乘 IK：从当前 q 迭代逼近\nwhile (err > tol) {\n  x  = FK(q)                 // 当前末端位姿\n  e  = poseErr(x_target, x)  // 位姿误差\n  J  = jacobian(q)           // 6×n 雅可比\n  dq = Jᵀ·(J·Jᵀ+λ²I)⁻¹ · e   // 阻尼最小二乘步\n  q += clamp(dq)             // 限位钳制后更新\n  err = |e|\n}\nλ 越大越稳越慢，λ→0 退化为伪逆。初值通常取当前关节角——这也是为什么 IK 总是“从当前姿态出发”找最近解。\n参考：Lynch & Park《Modern Robotics》§6.2 数值逆运动学\n机械臂仿真实验讲义 · 实验一\n10 / 27",
+    "images": []
+  },
+  {
+    "slide": 15,
+    "text": "实验一 · 机械臂仿真（一）\n实验目的\n实验目的：从“让模型动起来”到“像工程师一样用它”\n01\n掌握机械臂系统组成：本体、示教器、控制器各自的角色与协同关系\n02\n理解正 / 逆运动学：关节空间 ↔ 笛卡尔空间的映射，多解与奇异位形\n03\n会用示教器交互：点动操作，并完成工具坐标系 / 用户坐标系的标定\n04\n会编示教程序：用 MOVJ 指令串联多个 pose 位姿，连续执行形成作业动画\n05\n会做定量分析：末端轨迹分析 + 可达区域分析，评估机器人作业能力\n为什么这样定目标？\n四条实验要求 a~d 正好覆盖“交互 → 编程 → 分析”的完整工程闭环：\n先在示教器上会操作（a），再会编一套连续动作（b），最后会用轨迹与可达区域数据评估机器人的作业能力（c、d）——这正是工业现场示教工程师的真实工作流。\n课程定位：计算机图形与动画 · 机械臂仿真实验系列 · 实验一（8 学时）\n模块与目标：课程模块 CM11，支撑课程目标 CO4（服务 CO1 / CO3）\n先修基础：线性代数（矩阵运算）、基础编程（JavaScript）\n依据：《实验项目规划信息》实验项目 1（修订）\n机械臂仿真实验讲义 · 实验一\n11 / 27",
+    "images": []
+  },
+  {
+    "slide": 16,
+    "text": "实验一 · 机械臂仿真（一）\n实验要求\n实验要求：a ~ d 四项必做任务\na\n示教器交互与坐标系标定\n基于示教器界面完成点动等交互操作；标定工具坐标系（TCP）与用户坐标系（三点法），记录标定数据并验证坐标变换的正确性。\nb\n示教器编程与连续执行\n编排一套完整动作（拾取物体 / 空中画圆 / 360° 扫描等任选其一）；记录 ≥4 个 pose 位姿，用 MOVJ 指令串联成程序；执行代码，形成连续动画。\nc\n轨迹分析\n记录执行过程中的末端 TCP 轨迹数据；绘制轨迹路径图与位置 / 速度-时间曲线，分析插值效果与运动平滑性。\nd\n可达区域分析\n在关节限位内采样关节角（蒙特卡洛），用 FK 生成 TCP 点云；绘制可达区域图，标注边界与不可达空洞，评估工位布置合理性。\n成果形式：可运行工程 + 连续动作动画 + 分析报告（含标定数据、轨迹图、可达区域图）。四项全部完成方可验收（验收清单见最后一章）。\n机械臂仿真实验讲义 · 实验一\n12 / 27",
+    "images": []
+  },
+  {
+    "slide": 17,
+    "text": "实验一 · 机械臂仿真（一）\n实验内容\n实验内容：三条主线 + 一次完整演示\n① 开发工具链　nodejs + http-server 本地服务 · Chrome DevTools 调试回路 · Three.js / WebGL 场景渲染\n▼\n② 模型数据介绍　归一化关节化资产包（GLB + joint_map.json + URDF 对照）· link–joint 层级 · 关节限位数据\n▼\n③ 程序框架　robotLoader 一次 traverse 建关节表 · 限位钳制驱动 · 示教器面板 · 末端位姿实时显示\n▼\n④ 分析与演示　TCP 轨迹记录与可达区域采样 · 五步课堂演示 · 常见错误排查 · 验收清单\n建议学习顺序\n工具链先行：环境跑通再谈模型\n模型数据随后：看懂 link–joint 树与限位表，才知道程序在驱动什么\n程序框架落地：加载 → 驱动 → 面板 → 位姿验证，每步都有关口\n分析演示收尾：用数据说话，对照验收清单自查\n每一节都对应可立即动手的小任务\n机械臂仿真实验讲义 · 实验一\n13 / 27",
+    "images": []
+  },
+  {
+    "slide": 18,
+    "text": "实验一 · 机械臂仿真（一）\n开发环境\n开发工具链：本地服务器 + 浏览器调试回路\n最小开发回路\n① 编写代码\nHTML / JS / 模型文件\n② 本地服务器\nNode.js http-server\n③ 浏览器渲染\nChrome + WebGL\n④ DevTools 调试\n定位问题 → 回到 ①\n为什么不能双击打开 HTML？\nES Module、模型文件加载受浏览器同源策略限制，file:// 协议下会被拦截。必须通过 http://localhost 访问，这也是 WebGL 内容部署的标准方式。\n# 安装并启动本地服务器\nnpm install -g http-server\ncd robot-arm-demo\nhttp-server -p 8080\n# 浏览器访问\n# http://localhost:8080\nChrome DevTools 四项必备技能\n错误动态调试：Console 报错定位 + Sources 断点单步\n源码查看与分析：格式化压缩代码，读懂第三方库行为\n网络加载分析：Network 面板确认模型 / 贴图是否 404、是否跨域\n元素结构分析：Elements 面板检查 canvas 与 UI 节点树\n提示：在渲染循环里用 console.log 打印关节矩阵，是最直接的 FK 调试手段。\n对应实验内容 1）、2）\n机械臂仿真实验讲义 · 实验一\n14 / 27",
+    "images": []
+  },
+  {
+    "slide": 19,
+    "text": "",
+    "images": [
+      "../media/image9.png"
+    ]
+  },
+  {
+    "slide": 20,
+    "text": "实验一 · 机械臂仿真（一）\nThree.js 框架\n场景树：既是图形学骨架，也是运动学骨架\n// ① 初始化三件套\nconst renderer = new THREE.WebGLRenderer();\nconst scene = new THREE.Scene();\nconst camera = new THREE.PerspectiveCamera(\n  45, innerWidth/innerHeight, 0.1, 100);\n// ② 视点控制（轨道相机）\nconst controls = new OrbitControls(\n  camera, renderer.domElement);\n// ③ 主循环：驱动一切更新\nfunction animate() {\n  requestAnimationFrame(animate);\n  controls.update();\n  renderer.render(scene, camera);\n}\nanimate();\n主循环的职责\n每帧执行：响应交互 → 更新关节角 → 场景树重算矩阵 → 渲染。Three.js 会在渲染前自动沿场景树计算每个节点的 matrixWorld，这正是 FK 矩阵连乘的图形学实现。\n基于场景节点的管理模式\nScene\nbase_link\nshoulder (J1)\nelbow (J2)\ntool0 → TCP\n层级即运动链\n子节点的位姿 = 父节点位姿 × 自身局部变换。\n转动 J2，其下游所有连杆（橙色节点之后）随之运动——这与真实机械臂完全一致。\n操作接口\n· add / remove：挂接与拆卸\n· traverse：遍历查找关节\n· rotation / position：局部变换\n对应实验内容 3）\n机械臂仿真实验讲义 · 实验一\n15 / 27",
+    "images": []
+  },
+  {
+    "slide": 21,
+    "text": "实验一 · 机械臂仿真（一）\n素材信息分析\n实验素材解析：归一化机械臂资产包\n四件套素材清单（assets/）\n文件\n内容\n体量\nrobot_articulated.glb\n场景树 + 网格 + 关节元数据\n11.2 MB\njoint_map.json\n关节参数（枢轴 / 轴向 / 限位）\n4.3 KB\nrobot_spec.yaml\n人读规格，单一事实源\n2.3 KB\nrobot.urdf\nROS 生态交换格式\n1.9 KB\n节点命名链（GLB 场景树，13 个节点）\nlink_base → J1 → link_1 → J2 → link_2 → J3\n→ link_3 → J4 → link_4 → J5 → link_5 → link_flange → tcp\n三条约定：关节角 = 绕节点局部 +Z（右手定则）；零位 = 导出静止姿态；J_i 节点的静止旋转即 R_fix。\n五关节参数一览（源自 joint_map.json）\n关节\n角色\n连杆长\n限位 (°)\nJ1\n肩部俯仰\n6.54\n±120\nJ2\n肘部俯仰（大臂）\n8.45\n±120\nJ3\n肘部横摆（前倾 28°）\n1.85\n±90\nJ4\n腕部俯仰（小臂）\n8.19\n±120\nJ5\n法兰卷绕（末端 roll）\n3.72\n±180\n从场景树读出的两个关键设计\n① 网格顶点已烘焙、对象变换 = I——几何外观与关节变换完全解耦；\n② J_i 与 link_i 严格交替成链，扩展关节只需在链上插入一对节点。\n模型：Han’s Robot 5 自由度协作臂（实验一加工产物）\n机械臂仿真实验讲义 · 实验一\n16 / 27",
+    "images": []
+  },
+  {
+    "slide": 22,
+    "text": "实验一 · 机械臂仿真（一）\nURDF 模型解析\nURDF：用一棵 link–joint 树描述整台机器人\nURDF（Unified Robot Description Format）是 ROS 使用的 XML 格式，描述机器人的运动学、惯性属性与连杆几何（Lynch & Park, §4.2）。\n树结构：节点是 link（连杆），边是 joint（关节）。可表示任意树形机构——串联臂、灵巧手，但不能表示 Stewart 平台等闭链。\njoint 的四个关键子元素\nparent / child：关节连接的父连杆与子连杆\norigin：关节变量为 0 时，子连杆坐标系相对父连杆坐标系的位姿（xyz + rpy）\naxis：在子连杆坐标系中表达的运动轴单位向量（转动轴 / 移动方向）\nlimit：lower / upper 关节限位 + effort / velocity 上限\n关节类型：revolute（有限位转动）/ continuous（无限位转动）/ prismatic（平移）/ fixed（虚拟固定关节）\n<!-- UR5 肩关节片段 -->\n<joint name=\"shoulder_pan_joint\"\n        type=\"revolute\">\n  <parent link=\"base_link\"/>\n  <child link=\"shoulder_link\"/>\n  <origin xyz=\"0 0 0.089\"\n          rpy=\"0 0 0\"/>\n  <axis xyz=\"0 0 1\"/>\n  <limit lower=\"-6.283\" upper=\"6.283\"\n         effort=\"150\" velocity=\"3.14\"/>\n</joint>\nURDF → Three.js 场景树的映射\n① 每个 link 建一个 Object3D，几何 / 材质挂为其子节点\n② 按 parent–child 把 Object3D 挂成树\n③ origin 写入节点的局部 position / quaternion\n④ 关节驱动 = 绕 axis 修改局部 rotation，并用 limit 做钳制\n机械臂仿真实验讲义 · 实验一\n17 / 27",
+    "images": []
+  },
+  {
+    "slide": 23,
+    "text": "实验一 · 机械臂仿真（一）\n程序骨架 · 素材加载\nrobotLoader.js：一次 traverse 建出关节表\nexport async function loadRobot(url, jointMap) {\n  const robot = (await loader.loadAsync(url)).scene;\n  // ① traverse：收集带元数据的关节\n  const joints = [];\n  robot.traverse((node) => {\n    if (node.userData?.joint === true) {\n      joints.push({\n        name: node.name,      // 'J1'…'J5'\n        node,                  // 场景树引用\n        axis: node.userData.axis,\n        lower: node.userData.limit.lower,\n        upper: node.userData.limit.upper,\n        angle: 0,\n      });\n    }\n  });\n  // ② 对拍校验：数量 / 顺序 / 限位\n  validateAgainstMap(joints, jointMap);\n  // ③ 记录零位四元数，关节角在其上叠加\n  joints.forEach(j =>\n    j.node.userData.qZero = j.node.quaternion.clone());\n  const tcp = robot.getObjectByName('tcp');\n  return { robot, joints, tcp };\n}\n返回的 { robot, joints, tcp } 三件套即示教器的全部模型侧接口：robot 挂场景，joints 驱动，tcp 读末端位姿。\n五步解析\n① loadAsync  异步载入 GLB，gltf.scene 就是命名链的根节点。\n② traverse 建表  一次遍历整棵树，按 userData.joint === true 筛出 5 个关节，组成 { name, node, axis, lower, upper, angle }。\n③ extras → userData  Blender 导出的自定义属性（axis / limit / joint）原样挂在节点上，是\"素材即数据\"的通道。\n④ 对拍校验  与 joint_map.json 比对数量、顺序、限位，不一致立即抛错——加载期关口，杜绝带病运行。\n⑤ qZero 机制  克隆零位四元数；setJoint 时 q = qZero ⊗ z(θ)。对应素材设计\"J_i 静止旋转 = R_fix\"。\n代码来源：实验一_模型加工与程序骨架细化方案 §6.2（GLTFLoader 自 three/addons）\n机械臂仿真实验讲义 · 实验一\n18 / 27",
+    "images": []
+  },
+  {
+    "slide": 24,
+    "text": "实验一 · 机械臂仿真（一）\n关节控制实现\n关节驱动：限位钳制 + 场景树自动完成 FK\n// 关节限位钳制（URDF limit 的代码化身）\nfunction clamp(v, min, max) {\n  return Math.max(min, Math.min(max, v));\n}\n// 驱动关节：绕 URDF axis 旋转局部坐标系\nfunction setJoint(joint, angleRad) {\n  const q = clamp(angleRad, joint.lower,\n                  joint.upper);\n  joint.node.setRotationFromAxisAngle(\n    joint.axis, q);\n}\n// 渲染时 Three.js 自动沿树连乘矩阵\n// node.matrixWorld = 父矩阵 × 局部矩阵\n要点\n· 限位必须先钳制、后驱动，防止滑块或数值输入把关节拉到物理不可达位置。\n· 你不需要手写矩阵连乘——搭对场景树，FK 就由渲染管线免费完成；DH 手算则用于验证它。\nUR5 关节限位（实验给定值）\n关节\n下限\n上限\nBase（基座）\n−360°\n+360°\nShoulder（肩）\n−180°\n+180°\nElbow（肘）\n−180°\n+180°\nWrist 1（腕 1）\n−360°\n+360°\nWrist 2（腕 2）\n−360°\n+360°\nWrist 3（腕 3）\n−360°\n+360°\n注意：UR5 的 URDF 常把关节声明为 continuous（理论无限位），但真实机器人因走线与机械结构仍存在限位。仿真中按本表施加限位，行为才与真机一致（Lynch & Park §4.2 对 UR5 有同样说明）。\n对应实验要求 3）；实验内容 4）\n机械臂仿真实验讲义 · 实验一\n19 / 27",
+    "images": []
+  },
+  {
+    "slide": 25,
+    "text": "实验一 · 机械臂仿真（一）\n示教器设计\n虚拟示教器：工业机器人的标准人机界面\n三种示教范式（工业示教编程）\n点动 Jog：按住按钮关节连续转动，松开即停——粗调姿态用\n增量 Inch：每按一次走固定步长（如 0.1° / 1°）——精对点位用\n连续 Continuous：给定目标角，按设定速度连续运行到位\n设计原则：示教器的每个功能都对应真机的安全或精度需求——使能开关防止误触发，急停切断一切运动，速度倍率让操作者\"先慢后快\"地验证轨迹。仿真界面应复刻这套心智模型。\n本实验示教器功能清单\n□ 6 个关节滑块 + 数值输入（角度制显示）\n□ 关节坐标显示（各关节当前角）\n□ 世界坐标显示（末端 x, y, z + RPY）\n□ 关节使能 / 失能切换\n□ 急停按钮：一键冻结所有运动\n□ 速度倍率调节（10% ~ 100%）\n// 用 lil-gui 十分钟搭出示教器\nconst gui = new GUI({title:'示教器'});\ngui.add(state,'j1',-180,180,0.1)\n   .name('肩关节(°)')\n   .onChange(v => setJoint(J1, rad(v)));\ngui.add(state,'estop').name('急停');\n对应实验要求 4）；实验内容 5）\n机械臂仿真实验讲义 · 实验一\n20 / 27",
+    "images": []
+  },
+  {
+    "slide": 26,
+    "text": "实验一 · 机械臂仿真（一）\n位姿显示与验证\n末端位姿实时显示，并用三档测试验证 FK\n位姿面板：显示什么\n位置：末端 TCP 在基座（世界）系中的 x, y, z（单位 m，保留 4 位小数）\n姿态：RPY（roll / pitch / yaw，角度制，面向人）+ 四元数 (x, y, z, w)（面向程序）\n刷新率：跟随渲染主循环，每帧更新\n// 每帧从场景树读取末端位姿\nconst p = new THREE.Vector3();\nconst q = new THREE.Quaternion();\ntool0.getWorldPosition(p);\ntool0.getWorldQuaternion(q);\nconst rpy = new THREE.Euler().setFromQuaternion(q,'XYZ');\nRPY 与四元数之间可互相换算（setFromQuaternion / setFromEuler）。界面同时显示两者：RPY 供人判读，四元数供与外部程序对数。\nFK 正确性的三档验证\n第 1 档 · 全零位形\n所有关节置 0，末端位姿应等于 DH 表推出的基准位形——解析解，最先跑通。\n第 2 档 · 单关节转动\n每次只转一个关节到 ±90°，手算结果与界面读数对比，隔离定位轴向 / 原点错误。\n第 3 档 · 随机位形对拍\n随机生成 100 组关节角，自写 FK 函数与场景树 matrixWorld 对拍，误差 < 1e-6 视为通过。\n对应实验要求 2）、5）\n机械臂仿真实验讲义 · 实验一\n21 / 27",
+    "images": []
+  },
+  {
+    "slide": 27,
+    "text": "实验一 · 机械臂仿真（一）\n实验内容 · 分析方法\n把“动过”变成数据：轨迹分析与可达区域\n轨迹分析（对应要求 c）\n执行程序时逐帧采样 TCP 位姿 → 绘制轨迹路径与位置 / 速度-时间曲线，观察插值是否平滑、有无速度突变；图：5 关节正弦驱动下的末端轨迹采样。\n可达区域分析（对应要求 d）\n关节限位内蒙特卡洛采样 → FK 求得 TCP 点云 → 截面 / 投影图标注外边界与不可达空洞，回答“这台臂究竟够得着哪里”；图：平面 2R 臂可达区域示意。\n机械臂仿真实验讲义 · 实验一\n22 / 27",
+    "images": [
+      "../media/image10.png",
+      "../media/image11.png"
+    ]
+  },
+  {
+    "slide": 28,
+    "text": "实验一 · 机械臂仿真（一）\n把“动过”变成数据：轨迹分析与可达区域",
+    "images": [
+      "../media/image12.png"
+    ]
+  },
+  {
+    "slide": 29,
+    "text": "实验一 · 机械臂仿真（一）\n课堂演示\n演示：五步跑通最小机械臂仿真\nSTEP 1\n初始化场景\n渲染器 / 场景 / 相机 / 灯光 / OrbitControls / 地面网格\nSTEP 2\n加载模型\nGLTFLoader 或 URDFLoader 载入机械臂；检查单位与朝向\nSTEP 3\n建关节映射表\ntraverse 场景树，收集 {名称, 节点, 轴, 限位}\nSTEP 4\n绑定示教器\nlil-gui 滑块 → setJoint → 限位钳制 → 局部旋转\nSTEP 5\n验证与显示\n每帧读 matrixWorld，显示位姿面板，跑三档验证\n// STEP 3 的关键代码：从场景树收集关节\nconst joints = [];\nrobot.traverse(node => {\n  if (node.userData.jointType === 'revolute')\n    joints.push({ name: node.name, node,\n      axis: node.userData.axis,\n      lower: node.userData.limit.lower,\n      upper: node.userData.limit.upper });\n});\n课堂现场任务\n跟随教师完成 STEP 1~3，确认模型加载且 J1 能被滑块驱动；STEP 4~5 在实验课内完成。\n每完成一步立即目视检查，不要攒到最后一起调试。\n机械臂仿真实验讲义 · 实验一\n23 / 27",
+    "images": []
+  },
+  {
+    "slide": 30,
+    "text": "实验一 · 机械臂仿真（一）\n课堂演示\n正运动学动画：给定 5 关节角驱动全臂\n动画：robot_arm_fk_demo.gif（60 帧，480×480，透明背景）\n动画的四步生成逻辑\n① 采样  生成关节角序列 𝑞(𝑡)=(𝜃1,⋯,𝜃5)，各关节在限位内平滑变化；\n② FK 递推  按 𝑝𝑜𝑠𝑗=𝑝𝑜𝑠𝑗−1+𝑊𝑗−1𝑡𝑗 逐级求末端位姿，得到 tcp 轨迹；\n③ 驱动场景树  每帧写 J_i 局部旋转（Blender：spin.rotation_euler[2] = θ），渲染一帧；\n④ 合成输出  60 帧序列合成 GIF，末端轨迹与数值曲线 fk_end_trajectory.png 一致。\n① 采样  生成关节角序列 \\(q(t)=(\\theta_1,\\dots,\\theta_5)\\)，各关节在限位内平滑变化；\n② FK 递推  按 \\(pos_j = pos_{j-1} + W_{j-1}t_j\\) 逐级求末端位姿，得到 tcp 轨迹；\n③ 驱动场景树  每帧写 J_i 局部旋转（Blender：spin.rotation_euler[2] = θ），渲染一帧；\n④ 合成输出  60 帧序列合成 GIF，末端轨迹与数值曲线 fk_end_trajectory.png 一致。\n观察要点\n转动某关节时，其下游所有连杆整体跟随——层级即运动链；J3 横摆让末端轨迹偏离单一平面。\n素材：robot_arm_fk_demo.gif（实验一加工产物）\n机械臂仿真实验讲义 · 实验一\n24 / 27",
+    "images": [
+      "../media/image13.gif"
+    ]
+  },
+  {
+    "slide": 31,
+    "text": "实验一 · 机械臂仿真（一）\n常见错误与调试\n五个高频错误，以及对应的排查动作\n#\n症状\n根因与排查动作\n1\n关节朝错误方向转动\nURDF axis 表达在子连杆系而非世界系——在子节点局部空间旋转，不要换算到世界系\n2\n模型巨大 / 渺小、陷入地面\n单位混淆（URDF 用 m，部分 GLTF 用 mm）与 Y-up / Z-up 差异——加载后先打印 boundingBox 核对尺寸\n3\n位姿数值差一个固定偏移\norigin 的 rpy 理解反了或变换顺序错——回第 8 页核对变换链左乘顺序\n4\n滑块拖到边界后模型抖动\n未做限位钳制或角度制 / 弧度制混用——clamp 先行，界面度数 × π/180 再驱动\n5\n姿态显示跳变\n欧拉角在 ±180° 处的表示不连续（万向节锁邻域）——内部一律用四元数，仅显示层转 RPY\n调试三板斧\n① 打印矩阵：console.table(node.matrixWorld.elements) 直接看 4×4 矩阵数值　② 可视化坐标轴：给每个关节挂 AxesHelper，轴向错误一眼可见　③ 二分隔离：每次只动一个关节，把\"链式错误\"拆成\"单关节错误\"\n机械臂仿真实验讲义 · 实验一\n25 / 27",
+    "images": []
+  },
+  {
+    "slide": 32,
+    "text": "实验一 · 机械臂仿真（一）\n实践任务与验收\n实验任务、验收标准与 8 学时分配\n验收清单（对应实验要求 a~d）\n□ a 示教器交互：点动操作流畅，工具 / 用户坐标系标定完成且有验证数据\n□ b 示教器编程：≥4 个 pose 的 MOVJ 程序可连续执行，动作动画完整\n□ c 轨迹分析：TCP 轨迹路径与位置 / 速度曲线齐全，分析结论明确\n□ d 可达区域：可达区域图正确，边界与不可达空洞标注清晰\n□ 工程质量：页面无 404 / 跨域报错，关节限位与急停功能有效\n□ 提交物：工程代码 + 演示动画 + 实验报告（标定 / 轨迹 / 可达区域）\n提交物\n可运行的工程代码 + 连续动作演示动画 + 实验报告（含坐标系标定数据、轨迹分析图与可达区域图）\n建议学时分配（共 8 学时）\n环节\n学时\n产出\n环境搭建与模型导入\n1\n模型可见可动\n运动学原理（FK / IK）学习\n1.5\n推导笔记\n示教器交互与坐标系标定\n1.5\n标定数据\n示教器编程与动作执行\n2\n连续动画\n轨迹与可达区域分析\n1\n分析图表\n报告撰写与联调\n1\n提交物\n评分导向：示教器编程的连续执行效果（要求 b）与轨迹 / 可达区域分析图表（要求 c、d）是本次实验的两个主要采分点。\n机械臂仿真实验讲义 · 实验一\n26 / 27",
+    "images": []
+  },
+  {
+    "slide": 33,
+    "text": "实验一 · 总结\n从认识机械臂，到用示教器指挥机械臂\n本实验知识地图\n系统观　机械臂本体 + 示教器：关节 · 自由度 · 构型\n运动学　齐次变换 · DH 参数 · FK 连乘 · IK 多解与奇异\n工具链　http-server 部署 · DevTools 四项技能\n场景树　Object3D 层级 = 运动链 · matrixWorld 连乘\n工程化　限位钳制 · 示教器编程 MOVJ · 三档 FK 验证\n分析力　TCP 轨迹记录 · 可达区域蒙特卡洛采样\n留给实验二的问题\nMOVJ 让机械臂在示教点之间“跳”，但点位之间的路径形状不可控；作业要沿直线 / 圆弧精确走、要避开障碍——每个插值点怎么算？碰撞怎么提前发现？\n这是轨迹规划与碰撞检测问题。实验二将在本实验 IK 的基础上引入笛卡尔空间插值与 MOVL 直线指令、碰撞检测与手眼校正，让示教程序走出“点到点”的局限。\n延伸阅读\nLynch & Park《Modern Robotics》§3.3 齐次变换、§4.1–4.2 正运动学、§6.1–6.2 逆运动学　|　H. Asada《Introduction to Robotics》Ch.3 机构、Ch.4–5 运动学　|　MIT 6.4210 Lec 1 / 3 / 4\n机械臂仿真实验讲义 · 实验一\n27 / 27",
+    "images": []
+  }
+]

@@ -1,0 +1,17 @@
+[
+  {
+    "file": "E:\\学习_with_ai\\图形与动画\\public\\models\\robot3\\robot_articulated.glb",
+    "bytes": 9735312,
+    "sha256": "3aae4cb60d3b1cda45bd8d5cddfd8046ffe04040e4b7c62b103b34cb4224569c"
+  },
+  {
+    "file": "E:\\学习_with_ai\\图形与动画\\public\\models\\robot3\\joint_map.json",
+    "bytes": 7341,
+    "sha256": "b41d67338b6aaf9eed5961545cf05ef00f19a081caf2b82f700fbf762ebeba3b"
+  },
+  {
+    "file": "E:\\学习_with_ai\\图形与动画\\public\\models\\robot3\\robot.urdf",
+    "bytes": 2353,
+    "sha256": "58df41e8c0f98da6c80b72f53806cd0e13f69a550a9259968be8b97fd9567f2d"
+  }
+]

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>机械臂仿真小组作业 · 五人分工与接口可视化看板</title>
+  <style>
+    :root {
+      --bg: #0b1221;
+      --card: #121c31;
+      --panel: #17243d;
+      --border: #283a5e;
+      --text: #e6eefc;
+      --muted: #93a8cd;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --emerald: #10b981;
+      --sky: #38bdf8;
+      --amber: #f59e0b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 24px;
+      line-height: 1.5;
+    }
+    .container { max-width: 1180px; margin: 0 auto; }
+    .header {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+      gap: 12px; padding-bottom: 16px; margin-bottom: 20px; border-bottom: 1px solid var(--border);
+    }
+    .title { font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+    .badge { font-size: 12px; padding: 3px 10px; border-radius: 999px; background: var(--panel); border: 1px solid var(--border); color: var(--sky); }
+    .subtitle { font-size: 13px; color: var(--muted); margin-top: 4px; }
+    .tabs { display: flex; gap: 6px; background: var(--card); padding: 4px; border-radius: 8px; border: 1px solid var(--border); }
+    .tab-btn {
+      background: transparent; color: var(--muted); border: none; padding: 6px 14px;
+      border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s;
+    }
+    .tab-btn.active { background: var(--primary); color: #fff; }
+    .role-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 16px; }
+    .role-btn {
+      background: var(--card); color: var(--text); border: 1px solid var(--border);
+      border-radius: 10px; padding: 12px; text-align: left; cursor: pointer; transition: 0.2s;
+    }
+    .role-btn:hover { border-color: var(--sky); }
+    .role-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; box-shadow: 0 4px 14px rgba(59,130,246,0.35); }
+    .role-tag { font-size: 12px; opacity: 0.85; font-weight: 600; }
+    .role-name { font-size: 14px; font-weight: 700; margin-top: 4px; }
+    .flow-banner {
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+      background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 10px 16px;
+      font-size: 13px; margin-bottom: 16px;
+    }
+    .detail-grid { display: grid; grid-template-columns: 5fr 4fr 3fr; gap: 14px; }
+    .panel { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; }
+    .panel-title { font-size: 13px; font-weight: 700; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+    .fn-card { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; margin-bottom: 8px; }
+    .fn-sig { font-family: Consolas, monospace; font-size: 13px; font-weight: 700; color: var(--sky); }
+    .fn-desc { font-size: 12px; color: var(--muted); margin-top: 3px; }
+    .io-list { font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 6px; }
+    .copy-btn {
+      margin-top: 14px; width: 100%; padding: 9px; border-radius: 8px; border: none;
+      background: var(--primary); color: #fff; font-size: 13px; font-weight: 600; cursor: pointer;
+    }
+    .copy-btn:hover { background: var(--primary-hover); }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; background: var(--card); border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+    th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; }
+    th { background: var(--panel); font-weight: 700; }
+    .hidden { display: none; }
+    .plan-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div>
+        <div class="title">
+          <span>🤖 机械臂仿真 · 五人分工与接口数据流看板</span>
+          <span class="badge">组长 + 组员 A / B / C / D</span>
+        </div>
+        <div class="subtitle">点击下方角色卡片，查看对应成员负责的代码文件、函数签名、输入输出契约与实验报告章节</div>
+      </div>
+      <div class="tabs">
+        <button id="tab-arch" class="tab-btn active" onclick="switchView('arch')">角色与接口视图</button>
+        <button id="tab-flow" class="tab-btn" onclick="switchView('flow')">全局调用矩阵</button>
+        <button id="tab-plan" class="tab-btn" onclick="switchView('plan')">7天推进路线</button>
+      </div>
+    </div>
+
+    <div id="view-arch">
+      <div class="role-grid" id="role-buttons"></div>
+      <div class="flow-banner" id="flow-banner"></div>
+      <div class="detail-grid">
+        <div class="panel">
+          <div>
+            <div class="panel-title">
+              <span>📂 专属代码文件与核心函数</span>
+              <span id="role-file-badge" class="badge" style="font-family:monospace;"></span>
+            </div>
+            <div id="role-functions"></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div>
+            <div class="panel-title" style="color:var(--emerald);">📥 输入参数 (Input)</div>
+            <div id="role-inputs" class="io-list" style="margin-bottom:14px;"></div>
+            <div class="panel-title" style="color:var(--sky); border-top:1px solid var(--border); padding-top:12px;">📤 输出返回值 (Output)</div>
+            <div id="role-outputs" class="io-list"></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div>
+            <div class="panel-title">📝 对应实验报告章节</div>
+            <div id="role-report" style="font-size:13px; color:var(--muted);"></div>
+            <div class="panel-title" style="border-top:1px solid var(--border); padding-top:12px; margin-top:12px;">🎯 对应老师验收项</div>
+            <div id="role-check" style="font-size:13px; color:var(--amber);"></div>
+          </div>
+          <button id="copy-btn" class="copy-btn" onclick="copyCurrentRoleTask()">📋 复制该角色任务卡</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="view-flow" class="hidden">
+      <table>
+        <thead>
+          <tr>
+            <th>数据流向 (上游 → 下游)</th>
+            <th>调用的接口函数</th>
+            <th>传递的数据格式</th>
+            <th>业务作用</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>组员 A (示教UI) → 组长 (模型)</td>
+            <td style="font-family:monospace;color:var(--sky);">robot.setJointAngles(rad)</td>
+            <td style="font-family:monospace;">number[6] (弧度)</td>
+            <td style="color:var(--muted);">拖动滑块点动时，驱动 3D 机械臂旋转</td>
+          </tr>
+          <tr>
+            <td>组长 (模型) → 组员 A (示教UI)</td>
+            <td style="font-family:monospace;color:var(--emerald);">teachingBox.updateTCPDisplay(pose)</td>
+            <td style="font-family:monospace;">{ position, rotationRPY, quaternion }</td>
+            <td style="color:var(--muted);">每帧刷新屏幕 HUD 上的末端坐标与姿态</td>
+          </tr>
+          <tr>
+            <td>组员 B (标定/工位) → 组长 & 组员 A</td>
+            <td style="font-family:monospace;color:var(--amber);">Calibration.calibrateUserFrameThreePoints()</td>
+            <td style="font-family:monospace;">THREE.Matrix4 (4x4齐次矩阵)</td>
+            <td style="color:var(--muted);">三点法解算用户工件坐标系并切换物块抓取父节点</td>
+          </tr>
+          <tr>
+            <td>组员 A (示教UI) → 组员 C (轨迹MOVJ)</td>
+            <td style="font-family:monospace;color:var(--sky);">poseManager.savePose(name, rad)</td>
+            <td style="font-family:monospace;">Array&lt;{ name, angles }&gt;</td>
+            <td style="color:var(--muted);">记录至少 4 个关键示教位姿点，编成 MOVJ 程序</td>
+          </tr>
+          <tr>
+            <td>组员 C (轨迹MOVJ) → 组长 & 组员 D</td>
+            <td style="font-family:monospace;color:var(--emerald);">planner.update(dt) / charts.recordSample()</td>
+            <td style="font-family:monospace;">{ currentAngles } + (t, pos, v)</td>
+            <td style="color:var(--muted);">逐帧插值驱动机械臂，每 20ms 向组员 D 推流绘制速度曲线</td>
+          </tr>
+          <tr>
+            <td>组长 (FK) → 组员 D (点云分析)</td>
+            <td style="font-family:monospace;color:var(--amber);">WorkspaceCloud.generatePointCloud(fkFn)</td>
+            <td style="font-family:monospace;">THREE.Points (20,000+ 顶点)</td>
+            <td style="color:var(--muted);">蒙特卡洛随机采样生成可达区域点云并分析空洞</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="view-plan" class="hidden">
+      <div class="plan-grid">
+        <div class="panel"><div><div class="panel-title">阶段一 (第1~2天)</div><div style="color:var(--sky);font-size:13px;margin-bottom:8px;">接口对齐与底座跑通</div><div class="io-list"><div>• <b>组长</b>：把机械臂挂入场景并驱动 J1~J6</div><div>• <b>组员 A</b>：写出示教器 6 滑块与急停界面</div><div>• <b>组员 B</b>：搭建工业地面网格与工件台</div></div></div></div>
+        <div class="panel"><div><div class="panel-title">阶段二 (第3~4天)</div><div style="color:var(--emerald);font-size:13px;margin-bottom:8px;">单点算法独立击破</div><div class="io-list"><div>• <b>组长</b>：完成纯数学 FK 并手算验证误差 &lt;1e-6</div><div>• <b>组员 B</b>：写完三点法标定施密特正交化</div><div>• <b>组员 C</b>：跑通两点间 MOVJ 插值过渡</div><div>• <b>组员 D</b>：写出 2 万点蒙特卡洛点云生成</div></div></div></div>
+        <div class="panel"><div><div class="panel-title">阶段三 (第5~6天)</div><div style="color:var(--amber);font-size:13px;margin-bottom:8px;">在 main.js 一键总装联调</div><div class="io-list"><div>• <b>组长 + A + C</b>：打4个位姿点连续播放拾取动作</div><div>• <b>组员 C + D</b>：运动时实时采集 TCP 并画出速度曲线</div><div>• <b>组长 + D</b>：场景内一键开关可达空间点云</div></div></div></div>
+        <div class="panel"><div><div class="panel-title">阶段四 (第7天)</div><div style="color:var(--sky);font-size:13px;margin-bottom:8px;">报告总装与演示录屏</div><div class="io-list"><div>• <b>组长 + A/B/C</b>：将各自章节与验证表交由组员 D</div><div>• <b>组员 D</b>：录制连续执行高清视频、排版完整报告</div><div>• <b>全组</b>：对照课件 4 项要求逐条复查</div></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const roles = [
+      {
+        id: 1, tag: "组长", title: "主场景总装与运动学底座",
+        files: "src/main.js · RobotModel.js · Kinematics.js",
+        upstream: "接收组员 A (手动滑块角) / 组员 C (MOVJ插值角)",
+        downstream: "向组员 A 输出实时 TCP 位姿 · 向组员 D 提供纯数学 FK",
+        functions: [
+          { sig: "setJointAngles(anglesRad)", desc: "驱动 J1~J6 节点绕各自轴旋转并做限位保护" },
+          { sig: "getTCPPose(toolOffset?)", desc: "提取末端世界坐标、RPY角、四元数与4x4矩阵" },
+          { sig: "Kinematics.forwardKinematics(rad)", desc: "纯数学矩阵相乘求末端位姿 (供点云高频调用)" },
+          { sig: "Kinematics.verifyFK(angles, mat)", desc: "对比独立FK与Three.js矩阵，验证误差 < 1e-6" }
+        ],
+        inputs: ["• anglesRad: number[6] (6个关节弧度值)", "• gltf.scene (Three.js 模型根节点)", "• toolOffsetMatrix: THREE.Matrix4 (可选工具偏置)"],
+        outputs: ["• TCPPose: { position, rotationRPY, quaternion }", "• T_base_tcp: THREE.Matrix4 (4x4齐次变换矩阵)", "• verifyResult: { positionError, isPassed }"],
+        report: "第一章：模型连杆层级映射、正向运动学 (FK) 齐次变换矩阵推导与零位/±90°/100组随机角误差对比表。",
+        check: "基础必做 + FK 精度验证 (<1e-6)"
+      },
+      {
+        id: 2, tag: "组员 A", title: "示教器面板与状态机",
+        files: "src/ui/TeachingBox.js · teachingBox.css",
+        upstream: "接收用户滑块/按钮操作 · 接收组长实时 TCP 位姿",
+        downstream: "向组长发送目标关节弧度 · 向组员 C 触发保存位姿",
+        functions: [
+          { sig: "onJointChange(callback)", desc: "滑块/输入框变动时，将角度(°)转弧度(rad)回传" },
+          { sig: "updateTCPDisplay(pose)", desc: "每帧刷新 HUD 面板上的位置(mm)、RPY(°)和四元数" },
+          { sig: "onStateChange(callback)", desc: "切换【使能 / 失能 / 急停】状态机并控制面板锁定" },
+          { sig: "getSpeedRatio() / syncSliders()", desc: "返回 10%~100% 速度倍率；自动播放时同步滑块" }
+        ],
+        inputs: ["• 界面拖拽的 6 个关节角度 (-180° ~ +180°)", "• 组长模块传入的实时 TCP 位姿对象", "• 关节软限位表 jointLimits"],
+        outputs: ["• anglesRad: number[6] (换算后的 6 关节弧度)", "• state: 'ENABLED' | 'DISABLED' | 'ESTOP'", "• speedRatio: number (0.1 ~ 1.0 倍率)"],
+        report: "第二章：Web 示教器系统交互架构、角度与弧度双向换算机制、使能与急停安全控制流设计。",
+        check: "任务 a：示教器点动交互与状态显示"
+      },
+      {
+        id: 3, tag: "组员 B", title: "三点法标定与工位场景",
+        files: "src/robot/Calibration.js · Workstation.js",
+        upstream: "接收标定采样的 3 个 TCP 世界坐标点",
+        downstream: "输出用户坐标系矩阵与工具偏置 · 切换工件抓取父节点",
+        functions: [
+          { sig: "calibrateUserFrameThreePoints(O,Px,Pxy)", desc: "利用施密特正交化解算工件局部坐标系变换矩阵" },
+          { sig: "worldToUserFrame(pt, userMat)", desc: "将世界坐标转换到用户工件坐标系下验证" },
+          { sig: "createTCPOffset(trans, rot)", desc: "标定末端夹爪/吸盘的工具中心点(TCP)偏移矩阵" },
+          { sig: "attachWorkpiece() / detachWorkpiece()", desc: "动态将物块挂载到末端法兰盘或放回工作台" }
+        ],
+        inputs: ["• 原点 pOrigin、X轴点 pXAxis、XY平面点 pXYPlane", "• 工具偏置平移向量 (dx, dy, dz) 与姿态", "• 主场景 THREE.Scene 与末端节点 flange"],
+        outputs: ["• userMatrix: THREE.Matrix4 (世界→工件变换矩阵)", "• tcpOffsetMatrix: THREE.Matrix4 (工具偏置矩阵)", "• 工业工作台 table 与可拾取物块 workpiece"],
+        report: "第三章：工具坐标系 TCP 与用户工件坐标系“三点法”标定数学推导、坐标变换验证数据与拾取场景设计。",
+        check: "任务 a：工具与用户坐标系三点法标定"
+      },
+      {
+        id: 4, tag: "组员 C", title: "示教编程与 MOVJ 插值",
+        files: "src/motion/PoseManager.js · MOVJPlanner.js",
+        upstream: "接收组员 A 记录的位姿点与速度倍率 · 接收每帧 Δt",
+        downstream: "逐帧输出插值关节角给组长 · 每 20ms 触发组员 D 采样",
+        functions: [
+          { sig: "savePose(name, anglesRad)", desc: "保存、删除、排序至少 4 个关键示教位姿点" },
+          { sig: "loadProgram(poseList) & play()", desc: "构建分段关节路网，启动连续动作状态机" },
+          { sig: "update(deltaTime)", desc: "基于真实帧间隔 Δt 计算关节空间 LERP/S曲线插值" },
+          { sig: "pause() / resume() / stop()", desc: "支持连续轨迹随时暂停、恢复与急停打断" }
+        ],
+        inputs: ["• 至少 4 个示教点 PoseList: Array<{name, angles}>", "• 每帧时间差 deltaTime (秒) 与速度倍率 (0.1~1.0)"],
+        outputs: ["• currentAngles: number[6] (当前帧插值弧度)", "• 状态标志: { isMoving, currentSegment, progress }", "• JSON 格式的示教程序文件导出"],
+        report: "第四章：示教程序数据结构、MOVJ 关节空间平滑插值算法原理、连续执行状态机与加减速分析。",
+        check: "任务 b：至少4个位姿记录与 MOVJ 连续执行"
+      },
+      {
+        id: 5, tag: "组员 D", title: "可达点云与轨迹图表分析",
+        files: "src/analysis/WorkspaceCloud.js · TrajectoryCharts.js",
+        upstream: "调用组长纯数学 FK 函数 · 接收组员 C 运动采样数据",
+        downstream: "生成 3D 可达点云与位置/速度曲线图 · 汇总报告与视频",
+        functions: [
+          { sig: "generatePointCloud(fkFn, limits, 20000)", desc: "关节限位内蒙特卡洛随机采样，生成 THREE.Points 点云" },
+          { sig: "analyzeWorkspaceGeometry(cloud)", desc: "计算最大/最小半径、高度范围，标出不可达空洞" },
+          { sig: "recordSample(t, tcpPos, velocity)", desc: "运动时每 20ms 记录末端世界坐标与线速度" },
+          { sig: "renderCharts(dom) & exportToCSV()", desc: "绘制 3D 轨迹、位置 p(t)、速度 v(t) 曲线并导出 CSV" }
+        ],
+        inputs: ["• 组长模块的纯数学 FK 函数与 6 关节限位区间", "• 连续运动时采集的时序数组 (t, x, y, z, v)"],
+        outputs: ["• THREE.Points (2万~5万个末端可达空间点云对象)", "• 空间轨迹图 + X/Y/Z位置曲线 + 速度随时间变化曲线", "• 完整实验报告排版 + 连续动作演示录屏视频"],
+        report: "第五章：末端 TCP 轨迹平滑性与速度曲线分析、蒙特卡洛工作空间可达区域与空洞评价、全组报告总装。",
+        check: "任务 c (轨迹与速度曲线) + 任务 d (可达区域点云)"
+      }
+    ];
+
+    let activeIndex = 0;
+    function renderRoleButtons() {
+      document.getElementById('role-buttons').innerHTML = roles.map((r, idx) => `
+        <button class="role-btn ${idx === activeIndex ? 'active' : ''}" onclick="selectRole(${idx})">
+          <div class="role-tag">${r.tag}</div>
+          <div class="role-name">${r.title}</div>
+        </button>
+      `).join('');
+    }
+    function renderRoleDetails() {
+      const r = roles[activeIndex];
+      document.getElementById('flow-banner').innerHTML = `
+        <div><span class="badge">上游输入</span> <span style="color:var(--muted);">${r.upstream}</span></div>
+        <div style="font-weight:700;">➔ [${r.tag}] ➔</div>
+        <div><span class="badge">下游输出</span> <span style="color:var(--muted);">${r.downstream}</span></div>
+      `;
+      document.getElementById('role-file-badge').textContent = r.files;
+      document.getElementById('role-functions').innerHTML = r.functions.map(f => `
+        <div class="fn-card"><div class="fn-sig">${f.sig}</div><div class="fn-desc">${f.desc}</div></div>
+      `).join('');
+      document.getElementById('role-inputs').innerHTML = r.inputs.map(i => `<div>${i}</div>`).join('');
+      document.getElementById('role-outputs').innerHTML = r.outputs.map(o => `<div>${o}</div>`).join('');
+      document.getElementById('role-report').textContent = r.report;
+      document.getElementById('role-check').textContent = r.check;
+    }
+    function selectRole(idx) { activeIndex = idx; renderRoleButtons(); renderRoleDetails(); }
+    function switchView(view) {
+      ['arch', 'flow', 'plan'].forEach(v => {
+        document.getElementById('view-' + v).classList.toggle('hidden', v !== view);
+        document.getElementById('tab-' + v).classList.toggle('active', v === view);
+      });
+    }
+    function copyCurrentRoleTask() {
+      const r = roles[activeIndex];
+      const text = `【${r.tag}：${r.title}】\n- 负责文件：${r.files}\n- 核心函数：\n` +
+        r.functions.map(f => `  * ${f.sig}：${f.desc}`).join('\n') +
+        `\n- 输入：\n  ${r.inputs.join('\n  ')}\n- 输出：\n  ${r.outputs.join('\n  ')}\n- 报告章节：${r.report}`;
+      navigator.clipboard.writeText(text);
+      const btn = document.getElementById('copy-btn');
+      btn.textContent = '✅ 已复制该角色任务卡';
+      setTimeout(() => { btn.textContent = '📋 复制该角色任务卡'; }, 1800);
+    }
+    renderRoleButtons(); renderRoleDetails();
+  </script>
+</body>
+</html>

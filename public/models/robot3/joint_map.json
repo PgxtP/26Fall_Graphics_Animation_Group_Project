@@ -1,0 +1,383 @@
+{
+  "model": "abb_arm_6dof",
+  "source": "abb-arm1.blend",
+  "convention": {
+    "joint_angle": "ABB 6-axis rotation about each J node local axis in parent frame (right-hand rule): J1=+Y, J2=+X, J3=+Y, J4=+Z, J5=+Z, J6=+Z; zero pose = exported rest pose (axis assignments set per user convention, override GLB R_fix·Z)",
+    "naming": "link_base -> J1 -> link_1 -> J2 -> link_2 -> ... -> J6 -> link_6 -> link_flange -> tcp",
+    "note": "ABB 6-axis from /assets1; J node quat = R_fix (folded at export); motion_axis derived from GLB R_fix · (0,0,1) (GLB is ground truth, assets1 dh.matrix has inconsistencies)"
+  },
+  "zero_pose": "rest",
+  "joints": [
+    {
+      "name": "J1",
+      "type": "revolute",
+      "axis": "y",
+      "role": "waist_yaw",
+      "limit": {
+        "lower": -180,
+        "upper": 180
+      },
+      "unit": "deg",
+      "translation": [
+        -2.5019877,
+        2.72359896,
+        4.68401766
+      ],
+      "rfix_quat_wxyz": [
+        7.52e-08,
+        -0.7071068287,
+        -0.7071067095,
+        3.15e-08
+      ],
+      "motion_axis": [
+        0,
+        1,
+        0
+      ],
+      "dh": {
+        "matrix": [
+          [
+            2e-07,
+            0.99999994,
+            -1.5e-07,
+            -2.5019877
+          ],
+          [
+            0.99999994,
+            -1.3e-07,
+            6e-08,
+            2.72359896
+          ],
+          [
+            6e-08,
+            -1.5e-07,
+            -0.99999994,
+            4.68401766
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "pivot_world": [
+        0.24909711,
+        0.10285759,
+        -4.68401718
+      ]
+    },
+    {
+      "name": "J2",
+      "type": "revolute",
+      "axis": "x",
+      "role": "shoulder_pitch",
+      "limit": {
+        "lower": -120,
+        "upper": 120
+      },
+      "unit": "deg",
+      "translation": [
+        -1.5688628,
+        -0.03381424,
+        -5.20737123
+      ],
+      "rfix_quat_wxyz": [
+        0.7071067691,
+        -1.21e-08,
+        -0.7071067691,
+        -1.21e-08
+      ],
+      "motion_axis": [
+        1,
+        0,
+        0
+      ],
+      "dh": {
+        "matrix": [
+          [
+            3e-08,
+            3e-08,
+            -0.99999994,
+            -1.5688628
+          ],
+          [
+            0.0,
+            1.0,
+            3e-08,
+            -0.03381424
+          ],
+          [
+            0.99999994,
+            -0.0,
+            3e-08,
+            -5.20737123
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "pivot_world": [
+        0.21528356,
+        1.67172003,
+        -9.89138794
+      ]
+    },
+    {
+      "name": "J3",
+      "type": "revolute",
+      "axis": "y",
+      "role": "elbow_pitch",
+      "limit": {
+        "lower": -120,
+        "upper": 120
+      },
+      "unit": "deg",
+      "translation": [
+        -6.7943716,
+        0.02465589,
+        2.4e-07
+      ],
+      "rfix_quat_wxyz": [
+        1.0,
+        -0.0,
+        0.0,
+        0.0
+      ],
+      "motion_axis": [
+        0,
+        1,
+        0
+      ],
+      "dh": {
+        "matrix": [
+          [
+            1.0,
+            -0.0,
+            0.0,
+            -6.7943716
+          ],
+          [
+            -0.0,
+            1.0,
+            0.0,
+            0.02465589
+          ],
+          [
+            -0.0,
+            -0.0,
+            1.0,
+            2.4e-07
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "pivot_world": [
+        0.23994049,
+        1.67172074,
+        -16.68575859
+      ]
+    },
+    {
+      "name": "J4",
+      "type": "revolute",
+      "axis": "z",
+      "role": "wrist_roll",
+      "limit": {
+        "lower": -180,
+        "upper": 180
+      },
+      "unit": "deg",
+      "translation": [
+        -0.24374615,
+        2.02229452,
+        -1.57022321
+      ],
+      "rfix_quat_wxyz": [
+        0.7071067691,
+        -0.7071067691,
+        -1.95e-08,
+        0.0
+      ],
+      "motion_axis": [
+        0,
+        0,
+        1
+      ],
+      "dh": {
+        "matrix": [
+          [
+            1.0,
+            3e-08,
+            -3e-08,
+            -0.24374615
+          ],
+          [
+            3e-08,
+            3e-08,
+            0.99999994,
+            2.02229452
+          ],
+          [
+            3e-08,
+            -0.99999994,
+            3e-08,
+            -1.57022321
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "pivot_world": [
+        2.26223493,
+        0.10149799,
+        -16.9295063
+      ]
+    },
+    {
+      "name": "J5",
+      "type": "revolute",
+      "axis": "z",
+      "role": "wrist_pitch",
+      "limit": {
+        "lower": -120,
+        "upper": 120
+      },
+      "unit": "deg",
+      "translation": [
+        -0.00423144,
+        0.95947099,
+        5.4984684
+      ],
+      "rfix_quat_wxyz": [
+        0.7071067691,
+        0.7071067691,
+        1.34e-08,
+        -0.0
+      ],
+      "motion_axis": [
+        0,
+        0,
+        1
+      ],
+      "dh": {
+        "matrix": [
+          [
+            1.0,
+            2e-08,
+            2e-08,
+            -0.00423144
+          ],
+          [
+            2e-08,
+            3e-08,
+            -0.99999994,
+            0.95947099
+          ],
+          [
+            -2e-08,
+            0.99999994,
+            3e-08,
+            5.4984684
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "pivot_world": [
+        7.76070309,
+        -0.8579722,
+        -16.93373871
+      ]
+    },
+    {
+      "name": "J6",
+      "type": "revolute",
+      "axis": "z",
+      "role": "flange_roll",
+      "limit": {
+        "lower": -180,
+        "upper": 180
+      },
+      "unit": "deg",
+      "translation": [
+        -3.24e-06,
+        1.57524681,
+        0.95961851
+      ],
+      "rfix_quat_wxyz": [
+        0.7071067691,
+        -0.7071067691,
+        -1.34e-08,
+        -0.0
+      ],
+      "motion_axis": [
+        0,
+        0,
+        1
+      ],
+      "dh": {
+        "matrix": [
+          [
+            1.0,
+            2e-08,
+            -2e-08,
+            -3.24e-06
+          ],
+          [
+            2e-08,
+            3e-08,
+            0.99999994,
+            1.57524681
+          ],
+          [
+            2e-08,
+            -0.99999994,
+            3e-08,
+            0.95961851
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "pivot_world": [
+        9.3359499,
+        0.10164619,
+        -16.93374443
+      ]
+    }
+  ],
+  "flange": {
+    "name": "link_flange"
+  },
+  "tcp": {
+    "parent_link": "link_flange",
+    "world_position": [
+      9.64295959,
+      0.10299294,
+      -16.93161964
+    ]
+  }
+}

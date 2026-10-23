@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<robot name="abb_arm_6dof">
+  <!-- 运动学教学对照文件：由 robot_spec_abb.yaml 同源生成；
+       visual mesh 引用待实验二按需补；关节轴固定为局部 +Z -->
+  <link name="link_base"/>
+  <link name="link_1"/>
+  <link name="link_2"/>
+  <link name="link_3"/>
+  <link name="link_4"/>
+  <link name="link_5"/>
+  <link name="link_6"/>
+  <link name="link_flange"/>
+  <joint name="J1" type="revolute">
+    <parent link="link_base"/><child link="link_1"/>
+    <origin xyz="-2.50198770 2.72359896 4.68401766" rpy="-3.14159250 -0.00000006 1.57079613"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-3.141593" upper="3.141593" effort="10" velocity="1"/>
+  </joint>
+  <joint name="J2" type="revolute">
+    <parent link="link_1"/><child link="link_2"/>
+    <origin xyz="-1.56886280 -0.03381424 -5.20737123" rpy="-0.00000003 -1.57079625 0.00000000"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-2.094395" upper="2.094395" effort="10" velocity="1"/>
+  </joint>
+  <joint name="J3" type="revolute">
+    <parent link="link_2"/><child link="link_3"/>
+    <origin xyz="-6.79437160 0.02465589 0.00000024" rpy="0.00000000 0.00000000 0.00000000"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-2.094395" upper="2.094395" effort="10" velocity="1"/>
+  </joint>
+  <joint name="J4" type="revolute">
+    <parent link="link_3"/><child link="link_4"/>
+    <origin xyz="-0.24374615 2.02229452 -1.57022321" rpy="-1.57079625 -0.00000003 0.00000003"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-3.141593" upper="3.141593" effort="10" velocity="1"/>
+  </joint>
+  <joint name="J5" type="revolute">
+    <parent link="link_4"/><child link="link_5"/>
+    <origin xyz="-0.00423144 0.95947099 5.49846840" rpy="1.57079625 0.00000002 0.00000002"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-2.094395" upper="2.094395" effort="10" velocity="1"/>
+  </joint>
+  <joint name="J6" type="revolute">
+    <parent link="link_5"/><child link="link_6"/>
+    <origin xyz="-0.00000324 1.57524681 0.95961851" rpy="-1.57079625 -0.00000002 0.00000002"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-3.141593" upper="3.141593" effort="10" velocity="1"/>
+  </joint>
+  <joint name="flange_fixed" type="fixed">
+    <parent link="link_6"/><child link="link_flange"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+</robot>

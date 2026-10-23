@@ -1,0 +1,501 @@
+[
+  {
+    "archive": "模型1.zip",
+    "model": "hanz_robot_5dof",
+    "convention": {
+      "joint_angle": "rotation about node local +Z (right-hand rule); zero pose = exported rest pose",
+      "naming": "link_base -> J1 -> link_1 -> J2 -> link_2 -> ... -> J5 -> link_5 -> link_flange -> tcp",
+      "note": "5-DOF adaptation; Ji rest rotation = R_fix (local Z = motion axis); motion_axis is the unit vector of link_i local +Z expressed in the parent frame"
+    },
+    "joints": [
+      {
+        "name": "J1",
+        "axis_from_map": "z",
+        "limit_from_map": {
+          "lower": -180.0,
+          "upper": 180.0
+        },
+        "unit": "deg",
+        "glb_extras": null
+      },
+      {
+        "name": "J2",
+        "axis_from_map": "z",
+        "limit_from_map": {
+          "lower": -120.0,
+          "upper": 120.0
+        },
+        "unit": "deg",
+        "glb_extras": null
+      },
+      {
+        "name": "J3",
+        "axis_from_map": "z",
+        "limit_from_map": {
+          "lower": -120.0,
+          "upper": 120.0
+        },
+        "unit": "deg",
+        "glb_extras": null
+      },
+      {
+        "name": "J4",
+        "axis_from_map": "z",
+        "limit_from_map": {
+          "lower": -120.0,
+          "upper": 120.0
+        },
+        "unit": "deg",
+        "glb_extras": null
+      },
+      {
+        "name": "J5",
+        "axis_from_map": "z",
+        "limit_from_map": {
+          "lower": -180.0,
+          "upper": 180.0
+        },
+        "unit": "deg",
+        "glb_extras": null
+      }
+    ],
+    "files": [
+      "images/",
+      "images/box-evn.glb",
+      "images/cali-tooltip.glb",
+      "images/joint_map.json",
+      "images/joint_map.json.pre-fix.bak",
+      "images/robot.urdf",
+      "images/robot_articulated.glb",
+      "images/robot_spec.yaml",
+      "images/rollingtable.glb",
+      "images/table.glb",
+      "images/table1.glb",
+      "images/tooltip.glb",
+      "images/_glb_dump.json"
+    ]
+  },
+  {
+    "archive": "模型2.zip",
+    "model": "robot-arm",
+    "convention": {
+      "joint_angle": "J1 and J3 rotate about node local +Y; J2 about +X; J4 and J5 about +Z (right-hand rule); zero pose = exported rest pose",
+      "naming": "link_base -> J1 -> link_1 -> J2 -> link_2 -> ... -> J5 -> link_flange -> tcp",
+      "note": "Collapsed from /assets/ model; J node quat = R_fix (baked from original J_axis); motion_axis in parent frame: J1/J3=+Y, J2=+X, J4/J5=+Z"
+    },
+    "joints": [
+      {
+        "name": "J1",
+        "axis_from_map": "y",
+        "limit_from_map": {
+          "lower": -180.0,
+          "upper": 180.0
+        },
+        "unit": "deg",
+        "glb_extras": {
+          "joint": true,
+          "type": "revolute",
+          "axis": "z",
+          "limit": {
+            "lower": -180.0,
+            "upper": 180.0,
+            "unit": "deg"
+          },
+          "dh": {
+            "theta": 0.0,
+            "d": 0.2433183193206787,
+            "a": 0.033229801803827286,
+            "alpha": 0.0,
+            "residual": 0.14364047348499298,
+            "matrix": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.033229801803827286
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.14364047348499298
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.2433183193206787
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          },
+          "role": "roll"
+        }
+      },
+      {
+        "name": "J2",
+        "axis_from_map": "x",
+        "limit_from_map": {
+          "lower": -120.0,
+          "upper": 120.0
+        },
+        "unit": "deg",
+        "glb_extras": {
+          "joint": true,
+          "type": "revolute",
+          "axis": "z",
+          "limit": {
+            "lower": -120.0,
+            "upper": 120.0,
+            "unit": "deg"
+          },
+          "dh": {
+            "theta": 0.0,
+            "d": 0.5368337035179138,
+            "a": -0.274990975856781,
+            "alpha": 0.0,
+            "residual": 2.02557586252422,
+            "matrix": [
+              [
+                3.422854177870249e-08,
+                0.0,
+                1.0,
+                -0.274990975856781
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.32087039947509766
+              ],
+              [
+                -1.0,
+                0.0,
+                3.422854177870249e-08,
+                0.5368337035179138
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          },
+          "role": "pitch"
+        }
+      },
+      {
+        "name": "J3",
+        "axis_from_map": "y",
+        "limit_from_map": {
+          "lower": -120.0,
+          "upper": 120.0
+        },
+        "unit": "deg",
+        "glb_extras": {
+          "joint": true,
+          "type": "revolute",
+          "axis": "z",
+          "limit": {
+            "lower": -120.0,
+            "upper": 120.0,
+            "unit": "deg"
+          },
+          "dh": {
+            "theta": 0.0,
+            "d": -0.05416996777057648,
+            "a": -1.2828969955444336,
+            "alpha": 0.0,
+            "residual": 0.003043830394744873,
+            "matrix": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                -1.2828969955444336
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.003043830394744873
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                -0.05416996777057648
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          },
+          "role": "pitch"
+        }
+      },
+      {
+        "name": "J4",
+        "axis_from_map": "z",
+        "limit_from_map": {
+          "lower": -120.0,
+          "upper": 120.0
+        },
+        "unit": "deg",
+        "glb_extras": {
+          "joint": true,
+          "type": "revolute",
+          "axis": "z",
+          "limit": {
+            "lower": -120.0,
+            "upper": 120.0,
+            "unit": "deg"
+          },
+          "dh": {
+            "theta": 0.0,
+            "d": 0.33121615648269653,
+            "a": -0.20595692098140717,
+            "alpha": -1.5707962925663548,
+            "residual": 1.233708143234253,
+            "matrix": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                -0.20595692098140717
+              ],
+              [
+                0.0,
+                3.422854177870249e-08,
+                1.0,
+                -1.233708143234253
+              ],
+              [
+                0.0,
+                -1.0,
+                3.422854177870249e-08,
+                0.33121615648269653
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          },
+          "role": "pitch"
+        }
+      },
+      {
+        "name": "J5",
+        "axis_from_map": "z",
+        "limit_from_map": {
+          "lower": -180.0,
+          "upper": 180.0
+        },
+        "unit": "deg",
+        "glb_extras": {
+          "joint": true,
+          "type": "revolute",
+          "axis": "z",
+          "limit": {
+            "lower": -180.0,
+            "upper": 180.0,
+            "unit": "deg"
+          },
+          "dh": {
+            "theta": 0.0,
+            "d": -0.3550330400466919,
+            "a": 0.006536480505019426,
+            "alpha": 3.422854177870248e-08,
+            "residual": 2.002254516903959,
+            "matrix": [
+              [
+                3.422854177870249e-08,
+                -3.422854177870249e-08,
+                -1.0,
+                0.006536480505019426
+              ],
+              [
+                -3.422854177870249e-08,
+                1.0,
+                -3.422854177870249e-08,
+                0.0949915200471878
+              ],
+              [
+                1.0,
+                3.422854177870249e-08,
+                3.422854177870249e-08,
+                -0.3550330400466919
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          },
+          "role": "roll"
+        }
+      }
+    ],
+    "files": [
+      "images/",
+      "images/joint_map.json",
+      "images/robot.urdf",
+      "images/robot_articulated.glb",
+      "images/tooltip.glb"
+    ]
+  },
+  {
+    "archive": "模型3.zip",
+    "model": "abb_arm_6dof",
+    "convention": {
+      "joint_angle": "ABB 6-axis rotation about each J node local axis in parent frame (right-hand rule): J1=+Y, J2=+X, J3=+Y, J4=+Z, J5=+Z, J6=+Z; zero pose = exported rest pose (axis assignments set per user convention, override GLB R_fix·Z)",
+      "naming": "link_base -> J1 -> link_1 -> J2 -> link_2 -> ... -> J6 -> link_6 -> link_flange -> tcp",
+      "note": "ABB 6-axis from /assets1; J node quat = R_fix (folded at export); motion_axis derived from GLB R_fix · (0,0,1) (GLB is ground truth, assets1 dh.matrix has inconsistencies)"
+    },
+    "joints": [
+      {
+        "name": "J1",
+        "axis_from_map": "y",
+        "limit_from_map": {
+          "lower": -180,
+          "upper": 180
+        },
+        "unit": "deg",
+        "glb_extras": {
+          "joint": true,
+          "type": "revolute",
+          "axis": "z",
+          "role": "waist_yaw",
+          "unit": "deg",
+          "limit": "{\"lower\": -180, \"upper\": 180}",
+          "dh": "{\"matrix\": [2e-07, 0.99999994, -1.5e-07, -2.5019877, 0.99999994, -1.3e-07, 6e-08, 2.72359896, 6e-08, -1.5e-07, -0.99999994, 4.68401766, 0.0, 0.0, 0.0, 1.0]}",
+          "zero_pose": "rest",
+          "HG": {}
+        }
+      },
+      {
+        "name": "J2",
+        "axis_from_map": "x",
+        "limit_from_map": {
+          "lower": -120,
+          "upper": 120
+        },
+        "unit": "deg",
+        "glb_extras": {
+          "joint": true,
+          "type": "revolute",
+          "axis": "z",
+          "role": "shoulder_pitch",
+          "unit": "deg",
+          "limit": "{\"lower\": -120, \"upper\": 120}",
+          "dh": "{\"matrix\": [3e-08, 3e-08, -0.99999994, -1.5688628, 0.0, 1.0, 3e-08, -0.03381424, 0.99999994, -0.0, 3e-08, -5.20737123, 0.0, 0.0, 0.0, 1.0]}",
+          "zero_pose": "rest",
+          "HG": {}
+        }
+      },
+      {
+        "name": "J3",
+        "axis_from_map": "y",
+        "limit_from_map": {
+          "lower": -120,
+          "upper": 120
+        },
+        "unit": "deg",
+        "glb_extras": {
+          "joint": true,
+          "type": "revolute",
+          "axis": "z",
+          "role": "elbow_pitch",
+          "unit": "deg",
+          "limit": "{\"lower\": -120, \"upper\": 120}",
+          "dh": "{\"matrix\": [1.0, -0.0, 0.0, -6.7943716, -0.0, 1.0, 0.0, 0.02465589, -0.0, -0.0, 1.0, 2.4e-07, 0.0, 0.0, 0.0, 1.0]}",
+          "zero_pose": "rest",
+          "HG": {}
+        }
+      },
+      {
+        "name": "J4",
+        "axis_from_map": "z",
+        "limit_from_map": {
+          "lower": -180,
+          "upper": 180
+        },
+        "unit": "deg",
+        "glb_extras": {
+          "joint": true,
+          "type": "revolute",
+          "axis": "z",
+          "role": "wrist_roll",
+          "unit": "deg",
+          "limit": "{\"lower\": -180, \"upper\": 180}",
+          "dh": "{\"matrix\": [1.0, 3e-08, -3e-08, -0.24374615, 3e-08, 3e-08, 0.99999994, 2.02229452, 3e-08, -0.99999994, 3e-08, -1.57022321, 0.0, 0.0, 0.0, 1.0]}",
+          "zero_pose": "rest",
+          "HG": {}
+        }
+      },
+      {
+        "name": "J5",
+        "axis_from_map": "z",
+        "limit_from_map": {
+          "lower": -120,
+          "upper": 120
+        },
+        "unit": "deg",
+        "glb_extras": {
+          "joint": true,
+          "type": "revolute",
+          "axis": "z",
+          "role": "wrist_pitch",
+          "unit": "deg",
+          "limit": "{\"lower\": -120, \"upper\": 120}",
+          "dh": "{\"matrix\": [1.0, 2e-08, 2e-08, -0.00423144, 2e-08, 3e-08, -0.99999994, 0.95947099, -2e-08, 0.99999994, 3e-08, 5.4984684, 0.0, 0.0, 0.0, 1.0]}",
+          "zero_pose": "rest",
+          "HG": {}
+        }
+      },
+      {
+        "name": "J6",
+        "axis_from_map": "z",
+        "limit_from_map": {
+          "lower": -180,
+          "upper": 180
+        },
+        "unit": "deg",
+        "glb_extras": {
+          "joint": true,
+          "type": "revolute",
+          "axis": "z",
+          "role": "flange_roll",
+          "unit": "deg",
+          "limit": "{\"lower\": -180, \"upper\": 180}",
+          "dh": "{\"matrix\": [1.0, 2e-08, -2e-08, -3.24e-06, 2e-08, 3e-08, 0.99999994, 1.57524681, 2e-08, -0.99999994, 3e-08, 0.95961851, 0.0, 0.0, 0.0, 1.0]}",
+          "zero_pose": "rest",
+          "HG": {}
+        }
+      }
+    ],
+    "files": [
+      "images/",
+      "images/joint_map.json",
+      "images/robot.urdf",
+      "images/robot_articulated.glb",
+      "images/rollingtable.glb",
+      "images/table.glb",
+      "images/tooltip.glb"
+    ]
+  }
+]

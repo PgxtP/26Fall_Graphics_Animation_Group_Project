@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="图形与动画 I WebGL 环境验证页" />
+    <link rel="icon" href="data:," />
+    <title>WebGL 环境验证</title>
+  </head>
+  <body>
+    <canvas id="scene" aria-label="three.js 三维场景"></canvas>
+    <main class="panel">
+      <p class="eyebrow">图形与动画 I</p>
+      <h1>WebGL 环境已启动</h1>
+      <p id="status" class="status">正在检查 WebGL2...</p>
+      <dl>
+        <div>
+          <dt>three.js</dt>
+          <dd>r186</dd>
+        </div>
+        <div>
+          <dt>交互</dt>
+          <dd>拖动旋转，滚轮缩放</dd>
+        </div>
+        <div>
+          <dt>动画</dt>
+          <dd>使用 Δt，与帧率无关</dd>
+        </div>
+      </dl>
+      <p class="hint">环境和模型加载结果会显示在上方状态栏。</p>
+    </main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
