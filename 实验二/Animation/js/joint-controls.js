@@ -117,6 +117,7 @@ function createCartesianJogPanel(api, motion, jogController, motionMessage) {
 
   const updateHud = () => {
     try {
+      const wasReady = panel.dataset.hudReady;
       const pose = getTCPPoseInJogFrame(api, jogController.getJogMode());
       const values = [
         pose.position.x.toFixed(3),
@@ -129,6 +130,9 @@ function createCartesianJogPanel(api, motion, jogController, motionMessage) {
       poseFields.forEach((field, index) => { field.value = values[index]; });
       frameLabel.textContent = pose.frameLabel;
       panel.dataset.hudReady = 'true';
+      if (wasReady === 'false' && !status.classList.contains('alarm')) {
+        setStatus(`${jogController.getJogMode()} 坐标点动已就绪。`);
+      }
     } catch (error) {
       poseFields.forEach((field) => { field.value = '—'; });
       frameLabel.textContent = jogController.getJogMode();
@@ -164,6 +168,7 @@ function createCartesianJogPanel(api, motion, jogController, motionMessage) {
     button.addEventListener('click', () => {
       try {
         const step = Number(stepInput.value);
+        if (!Number.isFinite(step) || step <= 0) throw new Error('位置点动步长必须为正有限数');
         const signedStep = Number(button.dataset.direction) * step;
         const result = jogController.jogStepCartesian(button.dataset.axis, signedStep);
         setStatus(`已下发 ${result.mode} ${signedStep < 0 ? '−' : '+'}${result.axis} 点动，IK：${result.method ?? 'auto'}。`);
