@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<robot name="hanz_robot_5dof">
+  <!-- 运动学教学对照文件：由 robot_spec.yaml 同源生成；
+       visual mesh 引用待实验二按需补 STL/DAE -->
+  <link name="link_base"/>
+  <link name="link_1"/>
+  <link name="link_2"/>
+  <link name="link_3"/>
+  <link name="link_4"/>
+  <link name="link_5"/>
+  <link name="link_flange"/>
+  <joint name="J1" type="revolute">
+    <parent link="link_base"/><child link="link_1"/>
+    <origin xyz="0.404880 -0.380638 3.292915" rpy="0.000000 0.000000 0.000000"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-2.094395102" upper="2.094395102" effort="10" velocity="1"/>
+  </joint>
+  <joint name="J2" type="revolute">
+    <parent link="link_1"/><child link="link_2"/>
+    <origin xyz="-0.076625 -4.007315 4.818048" rpy="0.000000 1.570796 0.000000"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-2.094395" upper="2.094395" effort="10" velocity="1"/>
+  </joint>
+  <joint name="J3" type="revolute">
+    <parent link="link_2"/><child link="link_3"/>
+    <origin xyz="-1.938170 1.666303 0.825360" rpy="0.000000 1.570796 0.000000"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-1.570796327" upper="1.570796327" effort="10" velocity="1"/>
+  </joint>
+  <joint name="J4" type="revolute">
+    <parent link="link_3"/><child link="link_4"/>
+    <origin xyz="1.615519 4.300988 2.325726" rpy="0.000000 1.570796 0.000000"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-2.094395" upper="2.094395" effort="10" velocity="1"/>
+  </joint>
+  <joint name="J5" type="revolute">
+    <parent link="link_4"/><child link="link_5"/>
+    <origin xyz="-1.507688 1.494519 0.014865" rpy="-1.114966 -0.370923 0.232882"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-3.141593" upper="3.141593" effort="10" velocity="1"/>
+  </joint>
+  <joint name="J5_flange" type="fixed">
+    <parent link="link_5"/><child link="link_flange"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+  <joint name="flange_tcp" type="fixed">
+    <parent link="link_flange"/><child link="tcp"/>
+    <origin xyz="0.000000 0.000000 1.336006" rpy="0 0 0"/>
+  </joint>
+</robot>
