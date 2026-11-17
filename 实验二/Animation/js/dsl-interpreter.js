@@ -233,14 +233,15 @@ export function createDSLRunner(api, motion, env = {}) {
 
   const grip = (value) => {
     if (typeof env.grip === 'function') return env.grip(value, api);
+    const cmd = value ? 'CLOSE' : 'OPEN';
+    if (typeof api.grip === 'function') return api.grip(cmd);
     // bindProgram 早于 Workstation 创建（robot-model.js:132 vs :133），所以这里必须惰性读取。
     const station = api.workstation;
     if (!station) throw new Error('工位尚未加载，无法执行 GRIP');
+    if (typeof station.setGrip === 'function') return station.setGrip(cmd);
     if (value) station.attachWorkpiece();
     else station.detachWorkpiece();
-    api.calibration?.invalidateUserFrame?.('物块位置已改变；如需当前工件坐标系，请重新读取标记并建立坐标系。');
-    const el = typeof document !== 'undefined' ? document.getElementById('workstation-status') : null;
-    if (el) el.textContent = value ? '物块已瞬移到当前 TCP 并挂载，点动后随法兰运动' : '物块已解除挂载，放回工作台放置点';
+    api.calibration?.invalidateUserFrame?.('夹爪或工件状态已改变；请重新读取工件标记并建立用户坐标系。');
   };
 
   const describe = (instruction) => {

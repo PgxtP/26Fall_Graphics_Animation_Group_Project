@@ -130,22 +130,43 @@ export async function loadRobotAsset({ scene, camera, controls, floor, grid, axe
   const pendant = bindJointControls(loaded, urdfModel);
   const calibration = bindCalibration(loaded, pendant, scene);
   const program = bindProgram(loaded, pendant);
+  const stationStatus = document.getElementById('workstation-status');
+  const describeGrip = (status) => {
+    const state = status.state === 'OPEN' ? '张开' : '闭合';
+    return `夹爪：${state}\n工件：${status.attached ? '已挂载，随法兰运动' : status.state === 'CLOSE' ? '未抓取（空夹）' : '未挂载，留在当前位置'}`;
+  };
   const workstation = await new Workstation(scene, robot.getObjectByName('link_flange'), {
     modelSpan: span, robotCenter: center.clone(), floorY: bounds.min.y,
     getTCPOffsetMatrix: () => loaded.calibration.tcpOffsetMatrix,
+    onGripChange: (state) => {
+      loaded.calibration.invalidateUserFrame('夹爪或工件状态已改变；请重新读取工件标记并建立用户坐标系。');
+      stationStatus.textContent = describeGrip(state);
+    },
   }).initialize();
   loaded.workstation = workstation;
   bounds.union(new THREE.Box3().setFromObject(workstation.table));
   bounds.getCenter(center); bounds.getSize(size); span = Math.max(size.x, size.y, size.z);
   fit();
-  const stationStatus = document.getElementById('workstation-status');
-  const requireStopped = () => { if (pendant.busy()) throw new Error('请先停止运动再挂载或放回物块'); };
-  for (const [id, operation] of [['attach-workpiece', () => workstation.attachWorkpiece()], ['detach-workpiece', () => workstation.detachWorkpiece()]]) {
+  const requireStopped = () => { if (pendant.busy()) throw new Error('请先停止运动再操作工件'); };
+  // C 组 DSL 的 GRIP 回调入口。执行器需先等待上一段运动结束。
+  loaded.grip = (state) => {
+    requireStopped();
+    if (pendant.state.estop) throw new Error('急停期间不可操作夹爪，请先解除急停');
+    return workstation.setGrip(state);
+  };
+  for (const [id, operation] of [
+    ['attach-workpiece', () => loaded.grip('CLOSE')],
+    ['detach-workpiece', () => loaded.grip('OPEN')],
+    ['reset-workpiece', () => {
+      requireStopped();
+      if (pendant.state.estop) throw new Error('急停期间不可复位工件');
+      workstation.resetWorkpiece();
+    }],
+  ]) {
     document.getElementById(id).addEventListener('click', () => {
       try {
+        if (pendant.state.programActive || loaded.program?.runner?.state?.running) throw new Error('请先停止程序再手动操作夹爪');
         requireStopped(); operation();
-        loaded.calibration.invalidateUserFrame('物块位置已改变；如需当前工件坐标系，请重新读取标记并建立坐标系。');
-        stationStatus.textContent = workstation.attached ? '物块已瞬移到当前 TCP 并挂载，点动后随法兰运动' : '物块已解除挂载，放回工作台放置点';
       }
       catch (error) { stationStatus.textContent = error.message; }
     });
@@ -153,7 +174,7 @@ export async function loadRobotAsset({ scene, camera, controls, floor, grid, axe
   document.getElementById('use-workpiece-points').addEventListener('click', () => {
     try {
       requireStopped();
-      if (workstation.attached) throw new Error('请先将物块放回工作台，再读取工件标记');
+      if (workstation.attached) throw new Error('请先张开夹爪释放物块，再读取工件标记');
       loaded.calibration.setUserPoints(workstation.getCalibrationPoints(), 'workpiece-markers');
       document.getElementById('frame-result').textContent = '已填入物块 O、Px、Pxy 标记的世界坐标（仿真），请建立坐标系';
     } catch (error) { document.getElementById('frame-result').textContent = error.message; }
@@ -178,8 +199,14 @@ export async function loadRobotAsset({ scene, camera, controls, floor, grid, axe
       if (modelSizeEl) modelSizeEl.textContent = `${size.x.toFixed(2)} × ${size.y.toFixed(2)} × ${size.z.toFixed(2)}（当前视图资产单位）`;
     });
   }
+  const graspDistance = document.getElementById('grasp-distance');
   return { update(delta) { pendant.update(delta); program.update(); calibration.update();
+    workstation.updateGripper();
+    if (!document.getElementById('task-workstation').hidden) {
+      const state = workstation.gripStatus;
+      graspDistance.textContent = `TCP 距抓取点 ${state.distance.toFixed(4)} · 容差 ${state.tolerance.toFixed(4)}（模型单位）${state.canGrab ? ' · 已进入抓取范围' : ''}`;
+    }
     workstation.table.visible = robot.visible;
-    // 物块已挂到法兰时，由 robot 的可见性控制；在桌上时由 table 控制。
+    workstation.workpiece.visible = robot.visible;
   } };
 }

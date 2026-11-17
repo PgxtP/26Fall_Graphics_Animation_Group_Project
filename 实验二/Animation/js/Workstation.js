@@ -1,13 +1,56 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-/** 工位场景及物块挂载关系；不包含机械臂路径规划、接触检测或物理仿真。 */
+// Preserve the complete world matrix, including a possible shear from scaled
+// ancestors. Object3D.attach alone only supports decomposable TRS transforms.
+function reparentKeepingWorld(parent, wp) {
+  if (!parent?.isObject3D || !wp?.isObject3D) throw new Error('挂载需要两个 THREE.Object3D');
+  for (let node = parent; node; node = node.parent) {
+    if (node === wp) throw new Error('不能将工件挂载到自身或其子节点');
+  }
+  parent.updateWorldMatrix(true, false);
+  wp.updateWorldMatrix(true, false);
+  const determinant = parent.matrixWorld.determinant();
+  if (!parent.matrixWorld.elements.every(Number.isFinite) || !Number.isFinite(determinant) || determinant === 0 ||
+      !wp.matrixWorld.elements.every(Number.isFinite) || wp.matrixWorld.determinant() === 0) throw new Error('父节点或工件的世界矩阵无效');
+  if (wp.parent === parent) return wp;
+  const local = parent.matrixWorld.clone().invert().multiply(wp.matrixWorld);
+  const autoUpdate = wp.matrixAutoUpdate;
+  local.decompose(wp.position, wp.quaternion, wp.scale);
+  const composed = new THREE.Matrix4().compose(wp.position, wp.quaternion, wp.scale);
+  const scale = Math.max(1, ...local.elements.map(Math.abs));
+  const hasShear = local.elements.some((value, i) => Math.abs(value - composed.elements[i]) > scale * 1e-10);
+  parent.add(wp);
+  wp.matrix.copy(local);
+  wp.matrixAutoUpdate = autoUpdate && !hasShear;
+  wp.matrixWorldNeedsUpdate = true;
+  wp.updateWorldMatrix(false, true);
+  return wp;
+}
+
+/** 将工件改挂到法兰，保持抓取瞬间的世界位姿。底层接口不进行距离/碰撞判定。 */
+export function attachWorkpiece(flange, wp) {
+  return reparentKeepingWorld(flange, wp);
+}
+
+/** 将工件脱开到场景，保持释放瞬间的世界位姿，不自动放回工作台。 */
+export function detachWorkpiece(scene, wp) {
+  if (!scene?.isScene) throw new Error('脱开需要 THREE.Scene');
+  return reparentKeepingWorld(scene, wp);
+}
+
+/** 工位与几何夹爪；距离判断仅用于抓取联动，不代替碰撞检测或物理仿真。 */
 export class Workstation {
   constructor(scene, flange, options = {}) {
     if (!scene?.isScene || !flange?.isObject3D) throw new Error('工位需要 THREE.Scene 与末端 flange');
+    if (options.graspTolerance !== undefined && (!Number.isFinite(options.graspTolerance) || options.graspTolerance <= 0)) throw new Error('抓取容差必须大于0');
     this.scene = scene; this.flange = flange; this.options = options;
     this.table = new THREE.Group(); this.table.name = 'table';
     this.workpiece = null;
+    this.gripper = new THREE.Group(); this.gripper.name = 'tcp-gripper';
+    this.gripper.matrixAutoUpdate = false;
+    this.gripperState = 'OPEN';
+    this.fingers = [];
   }
 
   async initialize() {
@@ -58,30 +101,98 @@ export class Workstation {
       const label = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(canvas), depthTest: false }));
       label.scale.set(this.blockSize * .45, this.blockSize * .225, 1); label.position.set(0, this.blockSize * .18, 0); point.add(label);
     }
-    this.detachWorkpiece();
+    this.createGripper();
+    this.resetWorkpiece();
     return this;
   }
 
   get attached() { return !!this.workpiece && this.workpiece.parent === this.flange; }
 
+  createGripper() {
+    if (this.gripper.parent) return;
+    const s = this.blockSize;
+    const metal = new THREE.MeshStandardMaterial({ color: 0x8294a7, metalness: .65, roughness: .35 });
+    const palm = new THREE.Mesh(new THREE.BoxGeometry(s * 1.8, s * .22, s * .6), metal);
+    palm.name = 'gripper-palm'; palm.position.y = s * .35;
+    this.gripper.add(palm);
+    for (const side of [-1, 1]) {
+      const finger = new THREE.Mesh(new THREE.BoxGeometry(s * .14, s * .85, s * .45), metal);
+      finger.name = side < 0 ? 'gripper-left' : 'gripper-right';
+      finger.userData.side = side; finger.position.y = -s * .15;
+      this.gripper.add(finger); this.fingers.push(finger);
+    }
+    this.gripper.traverse((node) => { if (node.isMesh) node.castShadow = true; });
+    this.flange.add(this.gripper);
+    this.updateGripper();
+  }
+
+  /** TCP 改变时/每帧调用，使夹爪根节点跟随当前工具偏移。 */
+  updateGripper() {
+    const offset = this.options.getTCPOffsetMatrix?.() ?? new THREE.Matrix4();
+    if (!offset?.isMatrix4 || !offset.elements.every(Number.isFinite) || offset.determinant() === 0) throw new Error('TCP 偏移矩阵无效');
+    this.gripper.matrix.copy(offset); this.gripper.matrixWorldNeedsUpdate = true;
+    for (const finger of this.fingers) {
+      finger.position.x = finger.userData.side * this.blockSize * (this.gripperState === 'OPEN' ? .82 : .57);
+    }
+    this.gripper.userData.gripState = this.gripperState;
+    this.gripper.updateWorldMatrix(true, true);
+  }
+
+  get gripStatus() {
+    if (!this.workpiece) return { state: this.gripperState, attached: false, canGrab: false, distance: null, tolerance: null };
+    this.updateGripper();
+    const tcp = this.gripper.getWorldPosition(new THREE.Vector3());
+    this.workpiece.updateWorldMatrix(true, false);
+    const contact = new THREE.Vector3(0, this.blockSize / 2, 0).applyMatrix4(this.workpiece.matrixWorld);
+    const distance = tcp.distanceTo(contact);
+    const tolerance = this.options.graspTolerance ?? this.blockSize * .2;
+    if (!Number.isFinite(tolerance) || tolerance <= 0) throw new Error('抓取容差必须大于0');
+    return { state: this.gripperState, attached: this.attached, distance, tolerance, canGrab: distance <= tolerance };
+  }
+
+  canGrab() { return this.gripStatus.canGrab; }
+
+  /** 供 GRIP 指令调用；CLOSE 距离不足时只闭爪，不吸附远处工件。 */
+  setGrip(state) {
+    if (!this.workpiece) throw new Error('工位尚未初始化');
+    if (!['OPEN', 'CLOSE'].includes(state)) throw new Error('夹爪指令必须是 OPEN 或 CLOSE');
+    if (state === 'CLOSE' && !this.attached && this.canGrab()) attachWorkpiece(this.flange, this.workpiece);
+    if (state === 'OPEN' && this.attached) detachWorkpiece(this.scene, this.workpiece);
+    this.gripperState = state;
+    this.updateGripper();
+    const status = this.gripStatus;
+    this.options.onGripChange?.(status);
+    return status;
+  }
+
   attachWorkpiece() {
     if (!this.workpiece) throw new Error('工位尚未初始化');
-    if (this.attached) return this.workpiece;
-    const offset = this.options.getTCPOffsetMatrix?.() ?? new THREE.Matrix4();
-    if (!offset?.isMatrix4 || !offset.elements.every(Number.isFinite)) throw new Error('TCP 偏移矩阵无效');
-    // 明确放到当前 TCP：物块顶面中心与工具尖端重合，然后随法兰运动。
-    const grasp = offset.clone().multiply(new THREE.Matrix4().makeTranslation(0, -this.blockSize / 2, 0));
-    this.flange.add(this.workpiece);
-    grasp.decompose(this.workpiece.position, this.workpiece.quaternion, this.workpiece.scale);
-    this.scene.updateMatrixWorld(true);
+    if (!this.attached && !this.canGrab()) throw new Error('TCP 未到工件顶面抓取点，请先移动机械臂接近工件');
+    this.setGrip('CLOSE');
     return this.workpiece;
   }
 
   detachWorkpiece() {
+    this.setGrip('OPEN');
+    return this.workpiece;
+  }
+
+  /** 明确的场景重置操作；与释放到当前位置的 OPEN 分开。 */
+  resetWorkpiece() {
     if (!this.workpiece) throw new Error('工位尚未初始化');
     this.table.add(this.workpiece);
+    this.workpiece.matrixAutoUpdate = true;
     this.placementMatrix.decompose(this.workpiece.position, this.workpiece.quaternion, this.workpiece.scale);
+    // The table subtree is used by the existing motion guard as one static
+    // obstacle. A grasp target inside that subtree would enlarge its AABB and
+    // stop the open jaws before they can reach the top-center contact point.
+    // Resolve the table-relative placement, then keep the independent workpiece
+    // at that world pose under the scene, just like an ordinarily released part.
+    detachWorkpiece(this.scene, this.workpiece);
+    this.gripperState = 'OPEN';
+    this.updateGripper();
     this.scene.updateMatrixWorld(true);
+    this.options.onGripChange?.(this.gripStatus);
     return this.workpiece;
   }
 

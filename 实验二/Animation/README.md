@@ -3,13 +3,13 @@
 > **独立工程说明**：本工程为《图形与动画》课程实验二的独立开发工程，由 作业与实验/实验一/Animation/ 完整克隆建立，基线已通过全部运动学与碰撞自检单元测试（100% PASS）。
 > **多人协作看板**：查看当前阶段的 5 人分工、依赖 DAG 与函数契约，请在浏览器中打开同目录下的 [实验二五人分工可视化看板.html](实验二五人分工可视化看板.html)。
 
-## 实验二核心增量目标（与实验一权责严格对齐）
+## 实验二核心增量目标（模块化分工架构）
 
-1. **逆运动学解算与系统总成（谷昔桐 · 对应实验一模型与FK底座）**：新增 js/ik-solver.js，攻关 Pieper 准则解析法与阻尼最小二乘法（DLS），处理多解与奇异点抑制，在 js/main.js 做系统总成。
-2. **示教器多坐标系点动交互（迪丽努尔·阿力木 · 对应实验一示教器UI与控制）**：升级 js/joint-controls.js，增加笛卡尔坐标输入与四种点动模式（关节/基座/工具/用户），实时调用 IK 实现微调。
-3. **TCP 四点法标定与工位夹爪（张云乔 · 对应实验一标定与工位）**：扩展 js/Calibration.js 实现尖端拟合最小二乘球心算法；在 js/Workstation.js 实现夹爪抓取吸附/脱开。
-4. **MOVL 直线插补与工业 DSL 执行机（刘倩竹 · 对应实验一位姿与MOVJ插值）**：新增 js/movl-planner.js 与 js/dsl-interpreter.js，实现笛卡尔空间严格直线插补（SLERP）与工业操作语言执行状态机。
-5. **对比图表、碰撞升级与全报告（王静 · 对应实验一采样图表与报告）**：在 js/analysis/TrajectoryCharts.js 绘制 MOVJ vs MOVL 直线度几何偏差曲线；升级夹爪相交干涉碰撞检测，录制演示视频并装配《实验二总报告》。
+1. **逆运动学解算与系统总成（Leader 模块）**：新增 `js/ik-solver.js`，实现解析多分支与自适应阻尼最小二乘法（DLS），处理多解与奇异点抑制，在 `js/robot-model.js` 完成系统总成。
+2. **示教器多坐标系点动交互（Member A 模块）**：升级 `js/joint-controls.js`，增加四种点动模式（Joint / Base / Tool / User）与实时笛卡尔 HUD，实时调用 IK 实现微调。
+3. **TCP 四点法标定与工位夹爪（Member B 模块）**：扩展 `js/Calibration.js` 实现尖端拟合最小二乘球心算法；在 `js/Workstation.js` 实现夹爪非瞬移抓取与释放。
+4. **MOVL 直线插补与工业 DSL 执行机（Member C 模块）**：新增 `js/movl-planner.js` 与 `js/dsl-interpreter.js`，实现笛卡尔空间直线插补（SLERP）与工业操作语言执行状态机。
+5. **轨迹对比与碰撞分析（Member D 模块）**：基于 `js/analysis/TrajectoryCharts.js` 与 `js/analysis/WorkspaceCloud.js` 进行轨迹曲线与可达区域采样分析。
 
 ---
 
@@ -31,11 +31,24 @@
 
 程序只支持每行 `MOVJ P编号`。运行前检查至少4个不同位姿及关节限位。位姿记录包含关节角，手动采集时同时保存当前 TCP 世界矩阵。记录、撤销、清空、生成、载入和导入时会尝试保存到当前浏览器本地；手动编辑指令文本后请导出 JSON 保存，避免未保存的更改丢失。计算测试：`node js/tests/program.test.mjs`。
 
-## TCP 工具偏移（张云乔）
+## 四点法 TCP 标定与夹爪接口（已集成）
 
-在“TCP标定”输入已知平移与RPY，应用工具偏移即可采集工件三个标记点。长度沿用模型单位，页面角度为度，函数RPY数组为弧度。
+在“TCP 标定”中，让同一工具尖端以至少 4 种充分分散的姿态接触同一个固定点，停稳后点击“采集当前法兰位姿”。点击“拟合球心与 TCP 偏移”后使用带列主元 QR 求解球心最小二乘问题，并计算接触一致性误差（`fitSphereCenter`、`fitTCPFromPoses`）。仅在最大接触误差不超过设定容差时允许应用。四点法只辨识平移，工具 RPY 由已知安装方向给定。
 
-核心交付为 js/Calibration.js、js/Workstation.js。界面适配为 calibration-panel.js、calibration-math.js；index.html 只负责B的TCP、用户坐标系、工位和记录区接入。详细推导、边界和验证见 [总报告第三章](实验总报告_机械臂三维仿真与示教系统.md#第三章-工具坐标系-tcp-与用户工件坐标系三点法标定)。
+在“工位场景”中先将 TCP 对准物块顶面中心并停止运动，再执行 `CLOSE`。距离不超过 `blockSize * 0.2` 时挂载到法兰；远处闭合为空夹，不瞬移工件。`OPEN` 将工件挂回场景并保留释放时的世界位姿；`resetWorkpiece()` 将工件复位至桌面初始点。`window.robotSimulation.grip('CLOSE' | 'OPEN')` 已与 DSL `GRIP` 指令完成对接。
+
+## 多坐标系点动、MOVL 与工业 DSL（已集成）
+
+- **多坐标系点动（`js/joint-controls.js`）**：支持 `Joint`、`Base`、`Tool`、`User` 四种模式，实时显示当前坐标系下 TCP 的 X/Y/Z 与 R/P/Y，并通过 `api.solveIK(targetPos, null, currentJoints, { method: 'auto' })` 驱动笛卡尔微调。
+- **MOVL 与 DSL（`js/movl-planner.js`、`js/dsl-interpreter.js`、`js/program-panel.js`）**：支持位置线性插值 + 四元数 SLERP 直线规划与逐点逆解热启动预检；支持 `MOVJ`、`MOVL`、`GRIP`、`WAIT`、`SET SPEED`、`LOOP ... END` 状态机执行（`IDLE / RUNNING / PAUSED / E-STOP / DONE`）。
+
+## 验证命令
+
+运行全部 Node 单元测试（8 组）：
+
+```powershell
+Get-ChildItem js/tests/*.test.mjs | ForEach-Object { node $_.FullName }
+```
 
 ## 用户坐标系三点法
 
@@ -53,15 +66,15 @@
 
 算法参考：[Doosan 三点坐标系定义](https://doosanrobotics.github.io/doosan-robotics-api-manual/GL013303/mode/manual/coordinate_teaching/calc_coord.html)。
 
-## 轨迹分析与可达区域（王静）
+## 轨迹分析与可达区域
 
-“轨迹分析”和“可达区域”两个页签对应实验要求 c、d：
+“轨迹分析”和“可达区域”两个页签提供如下分析功能：
 
 - **轨迹分析**：扫描程序执行时自动记录；其他程序可先点“开始记录”。模块逐帧读取 `tcp` 节点世界坐标，绘制轨迹 XZ 俯视图、位置曲线 p(t)、速度曲线 v(t)，可导出 CSV。速度由相邻采样差分得到。
 - **可达区域**：按真实关节限位随机采样 2 万组关节角，经场景树正运动学生成 `THREE.Points` 点云，统计水平半径、高度范围、空腔占比与最大空洞，并显示工件原点到最近采样点的距离与页面判断。
 
 实现：`js/analysis/TrajectoryCharts.js`、`js/analysis/WorkspaceCloud.js`，`js/analysis/analysis-panel.js` 负责接线，页面入口在 `index.html` 末尾。
-数据口径：长度单位沿用**资产单位**（未换算为米）；点云随机种子固定 `20261026`，结果可复现。分析与结论见 [第五章](第五章_轨迹与可达区域分析.md)。
+数据口径：长度单位沿用**资产单位**（未换算为米）；点云随机种子固定 `20261026`，结果可复现。
 
 
 
