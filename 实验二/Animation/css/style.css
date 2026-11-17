@@ -1,0 +1,90 @@
+:root { color-scheme: dark; font-family: "Microsoft YaHei", system-ui, sans-serif; color: #e5edf5; background: #101822; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+[hidden] { display: none !important; }
+.workspace { display: grid; grid-template-columns: 340px minmax(0,1fr); height: 100dvh; }
+.panel { background: #15212e; padding: 18px; overflow-y: auto; border-right: 1px solid #2b3b4b; }
+.eyebrow { color: #65d9c5; font-size: 11px; letter-spacing: .16em; margin: 0 0 6px; }
+h1 { font-size: 24px; margin: 0 0 6px; } h2 { font-size: 17px; margin: 0; } h3 { font-size: 15px; margin: 0 0 12px; }
+p { line-height: 1.7; }
+.hint { color: #a8bacb; font-size: 12px; margin: 8px 0; }
+button,select,input { font: inherit; }
+button { border: 1px solid transparent; border-radius: 5px; background: #65d9c5; color: #102329; padding: 9px 12px; cursor: pointer; font-size: 13px; }
+button.secondary { background: #263b4e; color: #e5edf5; border-color: #3b5063; }
+button:disabled { opacity: .42; cursor: default; }
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible { outline: 2px solid #95f5e5; outline-offset: 2px; }
+button.danger { background: #ba3340; color: white; }
+button.danger[aria-pressed="true"] { outline: 2px solid #ffc56a; }
+.button-row { display: flex; gap: 8px; margin: 9px 0; }
+.button-row > * { flex: 1; min-width: 0; }
+select,input:not([type="checkbox"]):not([type="range"]) { padding: 8px; width: 100%; border: 1px solid #41586b; border-radius: 4px; background: #101d29; color: #e5edf5; margin: 5px 0; }
+input[type="range"] { width: 100%; accent-color: #65d9c5; margin: 4px 0; }
+input[type="checkbox"] { accent-color: #65d9c5; }
+label { display: block; font-size: 13px; }
+.enable { padding: 8px 0; font-size: 14px; }
+.speed-label { display: flex; justify-content: space-between; margin-top: 12px; }
+#motion-status { color: #ffd79a; font-size: 12px; margin: 6px 0 12px; min-height: 20px; }
+.joint-control { display: grid; grid-template-columns: minmax(55px,1fr) 43px 61px 61px; align-items: center; gap: 3px 6px; padding: 9px 0; border-top: 1px solid #2c3b4a; }
+.joint-control label { font-size: 12px; grid-column: 1 / 4; }
+.joint-control output { grid-column: 4; text-align: right; font-size: 13px; font-variant-numeric: tabular-nums; color: #65d9c5; }
+.joint-control input[type="range"] { grid-column: 1 / -1; grid-row: 2; }
+.joint-control input[type="number"] { grid-column: 1; grid-row: 3; margin: 0; padding: 5px 6px; font-size: 12px; }
+.joint-control > button { grid-column: 2; grid-row: 3; }
+.joint-control .compact { padding: 6px 4px; margin: 0; font-size: 12px; white-space: nowrap; }
+.joint-control .button-row { grid-column: 3 / 5; grid-row: 3; margin: 0; gap: 6px; }
+.joint-control .button-row button { touch-action: none; }
+.cartesian-jog { margin: 14px 0; padding: 13px; border: 1px solid #304456; border-radius: 7px; background: #111d29; }
+.cartesian-jog-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+.cartesian-jog-heading output { color: #65d9c5; font-size: 11px; text-align: right; }
+.cartesian-pose-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 5px 7px; margin: 8px 0 4px; }
+.cartesian-pose-grid label { color: #a8bacb; font-size: 11px; }
+.cartesian-pose-grid input { margin: 3px 0 0 !important; padding: 6px 5px !important; color: #a4f1e4 !important; font-size: 12px; font-variant-numeric: tabular-nums; text-align: right; }
+.cartesian-pose-grid input[readonly] { cursor: default; }
+.cartesian-unit { margin: 3px 0 10px; color: #8297aa; font-size: 10px; }
+.cartesian-jog-buttons { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 6px; margin-top: 8px; }
+.cartesian-jog-buttons button { padding: 7px 4px; }
+.cartesian-status { min-height: 34px; margin: 9px 0 0; color: #a8bacb; font-size: 11px; line-height: 1.55; }
+.cartesian-status.alarm { color: #ff9ca5; }
+.pose-summary { padding-top: 15px; margin-top: 15px; border-top: 1px solid #2c3b4a; }
+#tcp-position { display: block; color: #a4f1e4; margin: 10px 0 0; font-size: 13px; font-variant-numeric: tabular-nums; }
+.scene-area { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.scene-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 22px; background: #131f2b; }
+#scene-status { font-size: 12px; color: #a8bacb; margin: 5px 0 0; }
+.task-tabs { display: flex; gap: 4px; padding: 0 14px; border-bottom: 1px solid #2c3b4a; background: #131f2b; flex-shrink: 0; overflow-x: auto; }
+.task-tabs button { padding: 12px 14px; background: transparent; color: #a8bacb; border-radius: 0; border-bottom: 2px solid transparent; white-space: nowrap; }
+.task-tabs button[aria-selected="true"] { color: #8aebd9; border-bottom-color: #65d9c5; }
+.scene-view { flex: 1; min-height: 220px; position: relative; overflow: hidden; }
+#viewport { width: 100%; height: 100%; overflow: hidden; }
+#viewport canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+.view-help { position: absolute; right: 18px; bottom: 8px; font-size: 12px; color: #b3c5d4; pointer-events: none; background: #101822b0; padding: 5px 10px; border-radius: 4px; }
+.task-workbench { height: 46dvh; min-height: 280px; max-height: 60dvh; overflow: auto; border-top: 1px solid #3c5264; background: #162331; padding: 18px 22px; }
+.task-heading { margin-bottom: 20px; }
+.task-heading p { font-size: 13px; color: #a8bacb; margin: 7px 0; }
+.task-columns { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 22px; }
+.step { min-width: 0; }
+.step + .step { border-left: 1px solid #304456; padding-left: 22px; }
+.step > button { display: block; width: 100%; margin: 10px 0; }
+.step .button-row { flex-wrap: wrap; }
+.step .button-row button { flex-basis: 76px; }
+.notice { color: #e8cda2; background: #332e24; padding: 10px; font-size: 12px; border-radius: 4px; }
+.result { font-family: inherit; white-space: pre-wrap; overflow-wrap: anywhere; background: #10202a; padding: 12px; border-left: 2px solid #65d9c5; line-height: 1.8; }
+pre { max-width: 100%; overflow-x: auto; font-size: 12px; color: #bcdbd6; line-height: 1.7; }
+details { margin: 12px 0; } summary { cursor: pointer; color: #b5c8d8; font-size: 12px; }
+details[open] > summary { margin-bottom: 12px; }
+details label { margin: 10px 0; }
+dl { display: grid; grid-template-columns: 70px 1fr; gap: 10px; font-size: 12px; } dt { color: #9eb0c3; } dd { margin: 0; overflow-wrap: anywhere; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; } th,td { text-align: left; padding: 8px 3px; border-bottom: 1px solid #334858; }
+.pose-table { overflow-x: auto; }
+.pose-table table { min-width: 300px; font-variant-numeric: tabular-nums; }
+.active-pose { background: #244b49; color: #a4f1e4; }
+#movj-code { width: 100%; resize: vertical; min-height: 150px; padding: 10px; border: 1px solid #41586b; border-radius: 4px; background: #101d29; color: #b9f1e6; font: 14px/1.8 Consolas, monospace; }
+#asset-checks { padding-left: 18px; font-size: 12px; line-height: 1.8; color: #c9bb8f; }
+@media (max-width: 1150px) { .task-columns { grid-template-columns: 1fr; gap: 18px; } .step + .step { border-left: 0; border-top: 1px solid #304456; padding: 16px 0 0; } }
+
+/* 组员 D 本地验证页签（轨迹分析 / 可达区域） */
+.analysis-layout { display: grid; grid-template-columns: 270px minmax(0, 1fr); gap: 22px; align-items: start; }
+.analysis-side .step + .step { border-left: 0; padding-left: 0; border-top: 1px solid #304456; padding-top: 16px; margin-top: 16px; }
+.analysis-chart { min-width: 0; height: 300px; }
+.analysis-chart canvas { display: block; width: 100%; height: 100%; border: 1px solid #2b3b4b; border-radius: 6px; }
+@media (max-width: 1150px) { .analysis-layout { grid-template-columns: 1fr; gap: 18px; } .analysis-chart { height: 260px; } }
+@media (max-width: 720px) { .workspace { grid-template-columns: 1fr; height: auto; } .panel { max-height: 52dvh; order: 2; } .scene-area { height: 78dvh; } .scene-header { padding: 12px; } .scene-header h2 { font-size: 15px; } .task-tabs { padding: 0 4px; } .task-tabs button { padding: 10px; font-size: 12px; } .task-workbench { min-height: 220px; padding: 14px; } }

@@ -1,0 +1,1197 @@
+{
+  "asset": {
+    "generator": "Khronos glTF Blender I/O v5.2.40",
+    "version": "2.0"
+  },
+  "scene": 0,
+  "scenes": [
+    {
+      "extras": {
+        "HG3D": {
+          "subscribed": 1,
+          "pcoll": {
+            "humans": "none"
+          },
+          "load_exception": 0,
+          "previews_list_humans": [
+            "models\\male\\Asian\\Ben.json",
+            "models\\male\\Asian\\Liam.json",
+            "models\\male\\Asian\\Max.json",
+            "models\\male\\Asian\\Michael.json",
+            "models\\male\\Asian\\Terrence.json",
+            "models\\male\\Asian presets\\Asian 1.json",
+            "models\\male\\Asian presets\\Asian 2.json",
+            "models\\male\\Asian presets\\Asian 3.json",
+            "models\\male\\Asian presets\\Asian 4.json",
+            "models\\male\\Asian presets\\Asian 5.json",
+            "models\\male\\Asian presets\\Asian 6.json",
+            "models\\male\\Asian presets\\Asian 7.json",
+            "models\\male\\Black\\Dan.json",
+            "models\\male\\Black\\Hugo.json",
+            "models\\male\\Black\\Kent.json",
+            "models\\male\\Black\\Mortimer.json",
+            "models\\male\\Black\\Noah.json",
+            "models\\male\\Black\\Remy.json",
+            "models\\male\\Black presets\\Black 1.json",
+            "models\\male\\Black presets\\Black 2.json",
+            "models\\male\\Black presets\\Black 3.json",
+            "models\\male\\Black presets\\Black 4.json",
+            "models\\male\\Caucasian\\David.json",
+            "models\\male\\Caucasian\\Jack.json",
+            "models\\male\\Caucasian\\Jude.json",
+            "models\\male\\Caucasian\\Julius.json",
+            "models\\male\\Caucasian\\Nico.json",
+            "models\\male\\Caucasian\\Otto.json",
+            "models\\male\\Caucasian\\Owen.json",
+            "models\\male\\Caucasian\\Peter.json",
+            "models\\male\\Caucasian\\Rory.json",
+            "models\\male\\Caucasian\\Theo.json",
+            "models\\male\\Caucasian Presets\\Caucasian 1.json",
+            "models\\male\\Caucasian Presets\\Caucasian 2.json",
+            "models\\male\\Caucasian Presets\\Caucasian 3.json",
+            "models\\male\\Caucasian Presets\\Caucasian 4.json",
+            "models\\male\\Hispanic\\Enzo.json",
+            "models\\male\\Hispanic\\John.json",
+            "models\\male\\Hispanic\\Luke.json",
+            "models\\male\\Middle Eastern\\Cole.json",
+            "models\\male\\Middle Eastern\\George.json",
+            "models\\male\\Middle Eastern\\Theodore.json"
+          ],
+          "custom_content": {},
+          "ui": {}
+        },
+        "contentpacks_col": [
+          {
+            "name": "header"
+          },
+          {
+            "name": "8K Textures",
+            "pack_name": "8K Textures",
+            "creator": "HumGen",
+            "weblink": "https://www.humgen3d.com",
+            "description": null,
+            "icon_name": null,
+            "pack_version": [
+              4,
+              0
+            ],
+            "json_path": "D:\\document\\blender\\humangen3d-pkg\\\\content_packs\\8K_Textures.json",
+            "humans": false,
+            "human_textures": true,
+            "shapekeys": false,
+            "hair": false,
+            "poses": false,
+            "clothes": false,
+            "footwear": false,
+            "expressions": false
+          },
+          {
+            "name": "Base Clothes",
+            "pack_name": "Base Clothes",
+            "creator": "HumGen",
+            "weblink": "https://www.humgen3d.com",
+            "description": null,
+            "icon_name": null,
+            "pack_version": [
+              4,
+              1
+            ],
+            "json_path": "D:\\document\\blender\\humangen3d-pkg\\\\content_packs\\Base_Clothes.json",
+            "humans": false,
+            "human_textures": false,
+            "shapekeys": false,
+            "hair": false,
+            "poses": false,
+            "clothes": false,
+            "footwear": true,
+            "expressions": false
+          },
+          {
+            "name": "Base Hair",
+            "pack_name": "Base Hair",
+            "creator": "HumGen",
+            "weblink": "https://www.humgen3d.com",
+            "description": null,
+            "icon_name": null,
+            "pack_version": [
+              4,
+              1
+            ],
+            "json_path": "D:\\document\\blender\\humangen3d-pkg\\\\content_packs\\Base_Hair.json",
+            "humans": false,
+            "human_textures": false,
+            "shapekeys": false,
+            "hair": true,
+            "poses": false,
+            "clothes": false,
+            "footwear": false,
+            "expressions": false
+          },
+          {
+            "name": "Base Humans",
+            "pack_name": "Base Humans",
+            "creator": "HumGen",
+            "weblink": "https://www.humgen3d.com",
+            "description": null,
+            "icon_name": null,
+            "pack_version": [
+              4,
+              1
+            ],
+            "json_path": "D:\\document\\blender\\humangen3d-pkg\\\\content_packs\\Base_Humans.json",
+            "humans": true,
+            "human_textures": true,
+            "shapekeys": true,
+            "hair": false,
+            "poses": false,
+            "clothes": false,
+            "footwear": false,
+            "expressions": true
+          },
+          {
+            "name": "Base Poses",
+            "pack_name": "Base Poses",
+            "creator": "HumGen",
+            "weblink": "https://www.humgen3d.com",
+            "description": null,
+            "icon_name": null,
+            "pack_version": [
+              4,
+              0
+            ],
+            "json_path": "D:\\document\\blender\\humangen3d-pkg\\\\content_packs\\Base_Poses.json",
+            "humans": false,
+            "human_textures": false,
+            "shapekeys": false,
+            "hair": false,
+            "poses": false,
+            "clothes": false,
+            "footwear": false,
+            "expressions": false
+          },
+          {
+            "name": "DPL_HGV4_Collection",
+            "pack_name": "DPL_HGV4_Collection",
+            "creator": "DeVoide Ent",
+            "weblink": "https://devoide.gumroad.com",
+            "description": null,
+            "icon_name": null,
+            "pack_version": [
+              6,
+              1
+            ],
+            "json_path": "D:\\document\\blender\\humangen3d-pkg\\\\content_packs\\DPL_HGV4_Collection.json",
+            "humans": false,
+            "human_textures": false,
+            "shapekeys": false,
+            "hair": false,
+            "poses": false,
+            "clothes": false,
+            "footwear": false,
+            "expressions": false
+          }
+        ],
+        "blendermcp_server_running": 1,
+        "mcp_server_props": {}
+      },
+      "name": "Scene",
+      "nodes": [
+        13
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "extras": {
+        "tcp": true,
+        "tool_tip_world": [
+          -1.9863539934158325,
+          4.191871166229248,
+          11.825037956237793
+        ]
+      },
+      "name": "tcp",
+      "translation": [
+        0,
+        1.3360062837600708,
+        0
+      ]
+    },
+    {
+      "children": [
+        0
+      ],
+      "extras": {
+        "flange": true
+      },
+      "name": "link_flange"
+    },
+    {
+      "children": [
+        1
+      ],
+      "extras": {
+        "HG": {}
+      },
+      "mesh": 0,
+      "name": "link_5"
+    },
+    {
+      "children": [
+        2
+      ],
+      "extras": {
+        "joint": true,
+        "type": "revolute",
+        "axis": "z",
+        "role": "flange_roll",
+        "unit": "deg",
+        "limit": "{\"lower\": -180, \"upper\": 180}",
+        "dh": "{\"matrix\": [0.68730313, -0.46359208, 0.55919302, -1.40616035, -0.46359196, 0.31269678, 0.82903755, -2.05173588, -0.55919307, -0.82903749, -9e-08, 2.77130294, 0.0, 0.0, 0.0, 1.0]}",
+        "zero_pose": "rest",
+        "name": "J5",
+        "pivot_world": [
+          -1.5020840167999268,
+          3.073857069015503,
+          11.2769136428833
+        ],
+        "axis_world": [
+          -0.3624758720397949,
+          0.8368327021598816,
+          0.4102708399295807
+        ],
+        "translation": [
+          -1.507688045501709,
+          1.4945191144943237,
+          0.014864921569824219
+        ],
+        "rfix_quat_wxyz": [
+          0.8397234082221985,
+          -0.49827879667282104,
+          -0.2158305048942566,
+          0.0
+        ],
+        "dh_matrix": [
+          [
+            0.9068343639373779,
+            0.21508757770061493,
+            -0.3624759018421173,
+            -1.507688045501709
+          ],
+          [
+            0.21508757770061493,
+            0.5034364461898804,
+            0.8368327617645264,
+            1.4945191144943237
+          ],
+          [
+            0.3624759018421173,
+            -0.8368327617645264,
+            0.4102707803249359,
+            0.014864921569824219
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "limits_deg_lower": -180.0,
+        "limits_deg_upper": 180.0
+      },
+      "name": "J5",
+      "rotation": [
+        -0.49827879667282104,
+        0,
+        0.2158305048942566,
+        0.8397234678268433
+      ],
+      "translation": [
+        -1.5020841360092163,
+        11.2769136428833,
+        -3.073857069015503
+      ]
+    },
+    {
+      "children": [
+        3
+      ],
+      "extras": {
+        "HG": {}
+      },
+      "mesh": 1,
+      "name": "link_4"
+    },
+    {
+      "children": [
+        4
+      ],
+      "extras": {
+        "joint": true,
+        "type": "revolute",
+        "axis": "z",
+        "role": "wrist_pitch",
+        "unit": "deg",
+        "limit": "{\"lower\": -120, \"upper\": 120}",
+        "dh": "{\"matrix\": [0.22040345, -0.41451862, 0.88294774, -2.56297684, -0.41451868, 0.77959663, 0.4694714, -1.32698047, -0.88294768, -0.46947145, 7e-08, 7.65972137, 0.0, 0.0, 0.0, 1.0]}",
+        "zero_pose": "rest",
+        "name": "J4",
+        "pivot_world": [
+          0.0056039998307824135,
+          1.5793379545211792,
+          11.262048721313477
+        ],
+        "axis_world": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "translation": [
+          1.6155190467834473,
+          4.300987720489502,
+          2.325725555419922
+        ],
+        "rfix_quat_wxyz": [
+          0.7071068286895752,
+          0.0,
+          0.7071067690849304,
+          0.0
+        ],
+        "dh_matrix": [
+          [
+            3.422854177870249e-08,
+            0.0,
+            1.0,
+            1.6155190467834473
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            4.300987720489502
+          ],
+          [
+            -1.0,
+            0.0,
+            3.422854177870249e-08,
+            2.325725555419922
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "limits_deg_lower": -120.0,
+        "limits_deg_upper": 120.0
+      },
+      "name": "J4",
+      "rotation": [
+        0,
+        0,
+        -0.7071068286895752,
+        0.7071068286895752
+      ],
+      "translation": [
+        0.005603670142591,
+        11.262048721313477,
+        -1.5793380737304688
+      ]
+    },
+    {
+      "children": [
+        5
+      ],
+      "extras": {
+        "HG": {}
+      },
+      "mesh": 2,
+      "name": "link_3"
+    },
+    {
+      "children": [
+        6
+      ],
+      "extras": {
+        "joint": true,
+        "type": "revolute",
+        "axis": "z",
+        "role": "elbow_yaw_tilted28",
+        "unit": "deg",
+        "limit": "{\"lower\": -90, \"upper\": 90}",
+        "dh": "{\"matrix\": [0.22040345, -0.41451889, 0.88294756, -0.73835099, -0.41451886, 0.77959639, 0.4694716, -0.38924778, -0.88294756, -0.46947157, -1.7e-07, 1.64509845, 0.0, 0.0, 0.0, 1.0]}",
+        "zero_pose": "rest",
+        "name": "J3",
+        "pivot_world": [
+          -1.609915018081665,
+          -2.7216498851776123,
+          8.936323165893555
+        ],
+        "axis_world": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "translation": [
+          -1.9381699562072754,
+          1.6663029193878174,
+          0.8253602981567383
+        ],
+        "rfix_quat_wxyz": [
+          0.7071068286895752,
+          0.0,
+          0.7071067690849304,
+          0.0
+        ],
+        "dh_matrix": [
+          [
+            3.422854177870249e-08,
+            0.0,
+            1.0,
+            -1.9381699562072754
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            1.6663029193878174
+          ],
+          [
+            -1.0,
+            0.0,
+            3.422854177870249e-08,
+            0.8253602981567383
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "limits_deg_lower": -120.0,
+        "limits_deg_upper": 120.0
+      },
+      "name": "J3",
+      "rotation": [
+        0,
+        0,
+        -0.7071068286895752,
+        0.7071068286895752
+      ],
+      "translation": [
+        -1.6099144220352173,
+        8.936323165893555,
+        2.7216501235961914
+      ]
+    },
+    {
+      "children": [
+        7
+      ],
+      "extras": {
+        "HG": {}
+      },
+      "mesh": 3,
+      "name": "link_2"
+    },
+    {
+      "children": [
+        8
+      ],
+      "extras": {
+        "joint": true,
+        "type": "revolute",
+        "axis": "z",
+        "role": "elbow_pitch",
+        "unit": "deg",
+        "limit": "{\"lower\": -120, \"upper\": 120}",
+        "dh": "{\"matrix\": [3e-08, 1.0, -1.5e-07, 4.76760006, 1.0, -1.3e-07, 6e-08, -4.03969383, 6e-08, -1.5e-07, -1.00000012, 5.68682241, 0.0, 0.0, 0.0, 1.0]}",
+        "zero_pose": "rest",
+        "name": "J2",
+        "pivot_world": [
+          0.3282549977302551,
+          -4.38795280456543,
+          8.110962867736816
+        ],
+        "axis_world": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "translation": [
+          -0.07662498950958252,
+          -4.007314682006836,
+          4.818047523498535
+        ],
+        "rfix_quat_wxyz": [
+          0.7071068286895752,
+          0.0,
+          0.7071067690849304,
+          0.0
+        ],
+        "dh_matrix": [
+          [
+            3.422854177870249e-08,
+            0.0,
+            1.0,
+            -0.07662498950958252
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -4.007314682006836
+          ],
+          [
+            -1.0,
+            0.0,
+            3.422854177870249e-08,
+            4.818047523498535
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "limits_deg_lower": -120.0,
+        "limits_deg_upper": 120.0
+      },
+      "name": "J2",
+      "rotation": [
+        0,
+        0,
+        -0.7071068286895752,
+        0.7071068286895752
+      ],
+      "translation": [
+        0.3282549977302551,
+        8.110962867736816,
+        4.38795280456543
+      ]
+    },
+    {
+      "children": [
+        9
+      ],
+      "extras": {
+        "HG": {}
+      },
+      "mesh": 4,
+      "name": "link_1"
+    },
+    {
+      "children": [
+        10
+      ],
+      "extras": {
+        "joint": true,
+        "type": "revolute",
+        "axis": "z",
+        "role": "shoulder_pitch",
+        "unit": "deg",
+        "limit": "{\"lower\": -120, \"upper\": 120}",
+        "dh": "{\"matrix\": [3e-08, -0.0, -1.0, 2.85269403, 0.0, 1.0, -0.0, -3.83351779, 1.0, 0.0, 3e-08, 4.46291161, 0.0, 0.0, 0.0, 1.0]}",
+        "zero_pose": "rest",
+        "name": "J1",
+        "pivot_world": [
+          0.40487998723983765,
+          -0.3806380033493042,
+          3.292915105819702
+        ],
+        "axis_world": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "translation": [
+          0.40487998723983765,
+          -0.3806380033493042,
+          3.292915105819702
+        ],
+        "rfix_quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "dh_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.40487998723983765
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.3806380033493042
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            3.292915105819702
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "limits_deg_lower": -180.0,
+        "limits_deg_upper": 180.0,
+        "HG": {}
+      },
+      "name": "J1",
+      "translation": [
+        0.40487998723983765,
+        3.292915105819702,
+        0.3806380033493042
+      ]
+    },
+    {
+      "extras": {
+        "HG": {}
+      },
+      "mesh": 5,
+      "name": "link_base"
+    },
+    {
+      "children": [
+        11,
+        12
+      ],
+      "extras": {
+        "HG": {}
+      },
+      "name": "robot-arm"
+    }
+  ],
+  "materials": [
+    {
+      "name": "Hansrobottt2_svgBlinn1",
+      "normalTexture": {
+        "index": 0
+      },
+      "occlusionTexture": {
+        "index": 1
+      },
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          1
+        ],
+        "baseColorTexture": {
+          "index": 2
+        },
+        "metallicRoughnessTexture": {
+          "index": 1
+        }
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "robolow_Hansrobottt2_svgBlinn1_0.001",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1,
+            "TEXCOORD_0": 2
+          },
+          "indices": 3,
+          "material": 0
+        }
+      ]
+    },
+    {
+      "name": "robolow_Hansrobottt2_svgBlinn1_0.002",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 4,
+            "NORMAL": 5,
+            "TEXCOORD_0": 6
+          },
+          "indices": 7,
+          "material": 0
+        }
+      ]
+    },
+    {
+      "name": "robolow_Hansrobottt2_svgBlinn1_0.003",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 8,
+            "NORMAL": 9,
+            "TEXCOORD_0": 10
+          },
+          "indices": 11,
+          "material": 0
+        }
+      ]
+    },
+    {
+      "name": "robolow_Hansrobottt2_svgBlinn1_0.004",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 12,
+            "NORMAL": 13,
+            "TEXCOORD_0": 14
+          },
+          "indices": 15,
+          "material": 0
+        }
+      ]
+    },
+    {
+      "name": "robolow_Hansrobottt2_svgBlinn1_0.006",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 16,
+            "NORMAL": 17,
+            "TEXCOORD_0": 18
+          },
+          "indices": 19,
+          "material": 0
+        }
+      ]
+    },
+    {
+      "name": "robolow_Hansrobottt2_svgBlinn1_0",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 20,
+            "NORMAL": 21,
+            "TEXCOORD_0": 22
+          },
+          "indices": 23,
+          "material": 0
+        }
+      ]
+    }
+  ],
+  "textures": [
+    {
+      "sampler": 0,
+      "source": 0
+    },
+    {
+      "sampler": 0,
+      "source": 1
+    },
+    {
+      "sampler": 0,
+      "source": 2
+    }
+  ],
+  "images": [
+    {
+      "bufferView": 4,
+      "mimeType": "image/jpeg",
+      "name": "Hansrobottt2_svgBlinn1_Normal_DirectX"
+    },
+    {
+      "bufferView": 5,
+      "mimeType": "image/png",
+      "name": "Hansrobottt2_svgBlinn1_Mixed_AO-Hansrobottt2_svgBlinn1_Roughness"
+    },
+    {
+      "bufferView": 6,
+      "mimeType": "image/jpeg",
+      "name": "Hansrobottt2_svgBlinn1_Base_Color"
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 686,
+      "max": [
+        0.9942675828933716,
+        1.3360061645507812,
+        0.592422366142273
+      ],
+      "min": [
+        -0.7076031565666199,
+        -0.3701101541519165,
+        -1.1822168827056885
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 686,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 686,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5123,
+      "count": 2580,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 7,
+      "componentType": 5126,
+      "count": 817,
+      "max": [
+        0.6996011137962341,
+        0.0027707964181900024,
+        0.6704202890396118
+      ],
+      "min": [
+        -0.7246229648590088,
+        -2.9013123512268066,
+        -1.5183112621307373
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 8,
+      "componentType": 5126,
+      "count": 817,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 9,
+      "componentType": 5126,
+      "count": 817,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 10,
+      "componentType": 5123,
+      "count": 3084,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 11,
+      "componentType": 5126,
+      "count": 1031,
+      "max": [
+        0.8173104524612427,
+        2.8943142890930176,
+        0.4880692958831787
+      ],
+      "min": [
+        -2.955601692199707,
+        -1.0568851232528687,
+        -4.94374942779541
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 12,
+      "componentType": 5126,
+      "count": 1031,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 13,
+      "componentType": 5126,
+      "count": 1031,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 14,
+      "componentType": 5123,
+      "count": 4365,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 15,
+      "componentType": 5126,
+      "count": 786,
+      "max": [
+        0.9944443702697754,
+        -0.01132512092590332,
+        0.8666415214538574
+      ],
+      "min": [
+        -1.5634386539459229,
+        -3.7286009788513184,
+        -2.005833148956299
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 16,
+      "componentType": 5126,
+      "count": 786,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 17,
+      "componentType": 5126,
+      "count": 786,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 18,
+      "componentType": 5123,
+      "count": 2856,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 19,
+      "componentType": 5126,
+      "count": 1475,
+      "max": [
+        2.0618882179260254,
+        5.5499114990234375,
+        4.749744415283203
+      ],
+      "min": [
+        -0.09777730703353882,
+        -0.8797166347503662,
+        -0.8802347183227539
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 20,
+      "componentType": 5126,
+      "count": 1475,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 21,
+      "componentType": 5126,
+      "count": 1475,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 22,
+      "componentType": 5123,
+      "count": 6342,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 23,
+      "componentType": 5126,
+      "count": 1432,
+      "max": [
+        0.38675081729888916,
+        4.3241777420043945,
+        2.241732120513916
+      ],
+      "min": [
+        -4.383074760437012,
+        -0.0956352949142456,
+        -1.4161651134490967
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 24,
+      "componentType": 5126,
+      "count": 1432,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 25,
+      "componentType": 5126,
+      "count": 1432,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 26,
+      "componentType": 5123,
+      "count": 5454,
+      "type": "SCALAR"
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 8232,
+      "byteOffset": 0,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 8232,
+      "byteOffset": 8232,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 5488,
+      "byteOffset": 16464,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 5160,
+      "byteOffset": 21952,
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 5989814,
+      "byteOffset": 27112
+    },
+    {
+      "buffer": 0,
+      "byteLength": 4962700,
+      "byteOffset": 6016928
+    },
+    {
+      "buffer": 0,
+      "byteLength": 502580,
+      "byteOffset": 10979628
+    },
+    {
+      "buffer": 0,
+      "byteLength": 9804,
+      "byteOffset": 11482208,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 9804,
+      "byteOffset": 11492012,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 6536,
+      "byteOffset": 11501816,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 6168,
+      "byteOffset": 11508352,
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 12372,
+      "byteOffset": 11514520,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 12372,
+      "byteOffset": 11526892,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 8248,
+      "byteOffset": 11539264,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 8730,
+      "byteOffset": 11547512,
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 9432,
+      "byteOffset": 11556244,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 9432,
+      "byteOffset": 11565676,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 6288,
+      "byteOffset": 11575108,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 5712,
+      "byteOffset": 11581396,
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 17700,
+      "byteOffset": 11587108,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 17700,
+      "byteOffset": 11604808,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 11800,
+      "byteOffset": 11622508,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 12684,
+      "byteOffset": 11634308,
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 17184,
+      "byteOffset": 11646992,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 17184,
+      "byteOffset": 11664176,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 11456,
+      "byteOffset": 11681360,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 10908,
+      "byteOffset": 11692816,
+      "target": 34963
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9987
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 11703724
+    }
+  ]
+}
