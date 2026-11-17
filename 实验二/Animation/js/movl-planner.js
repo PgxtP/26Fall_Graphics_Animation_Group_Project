@@ -4,8 +4,9 @@ export const MOVL_DEFAULTS = Object.freeze({
   maxSamples: 160, // 最多插补点数，防止长距离规划耗时过长
   method: 'dls', // 逆解方法：dls 阻尼最小二乘，热启动（以上一点为初值）最适合连续直线
   posTol: 1e-3, // 位置收敛容差（与 ik-solver 的 DEFAULT_POS_TOL 一致）
-  rotTol: 2e-2, // 姿态收敛容差（弧度，与 ik-solver 的 DEFAULT_ROT_TOL 一致）
-  maxIterations: 60, // 单点最大迭代次数
+  rotTol: 0.25, // 姿态收敛容差（弧度）：兼容五轴机械臂全姿态 SLERP 欠自由度误差，同时防止大幅度偏离
+  rotWeight: 0.1, // 五轴位置优先权重：避免不可消去的姿态分量在 DLS 中拖累位置误差超过 posTol
+  maxIterations: 120, // 单点最大迭代次数
   maxJointStepDeg: 45, // 相邻插补点的单关节最大变化量，超过视为逆解跳到另一分支
 });
 
@@ -43,20 +44,21 @@ export function asQuaternion(value, fallback = null) {
 export function poseFromMatrix(elements) {
   if (!elements || elements.length < 16) throw new Error('世界矩阵无效');
   const m = elements;
+  // 列主序下：R00=m[0], R01=m[4], R02=m[8]; R10=m[1], R11=m[5], R12=m[9]; R20=m[2], R21=m[6], R22=m[10]
   const trace = m[0] + m[5] + m[10];
   let x, y, z, w;
   if (trace > 0) {
     const s = Math.sqrt(trace + 1) * 2;
-    w = 0.25 * s; x = (m[9] - m[6]) / s; y = (m[2] - m[8]) / s; z = (m[4] - m[1]) / s;
+    w = 0.25 * s; x = (m[6] - m[9]) / s; y = (m[8] - m[2]) / s; z = (m[1] - m[4]) / s;
   } else if (m[0] > m[5] && m[0] > m[10]) {
     const s = Math.sqrt(1 + m[0] - m[5] - m[10]) * 2;
-    w = (m[9] - m[6]) / s; x = 0.25 * s; y = (m[1] + m[4]) / s; z = (m[2] + m[8]) / s;
+    w = (m[6] - m[9]) / s; x = 0.25 * s; y = (m[4] + m[1]) / s; z = (m[8] + m[2]) / s;
   } else if (m[5] > m[10]) {
     const s = Math.sqrt(1 + m[5] - m[0] - m[10]) * 2;
-    w = (m[2] - m[8]) / s; x = (m[1] + m[4]) / s; y = 0.25 * s; z = (m[6] + m[9]) / s;
+    w = (m[8] - m[2]) / s; x = (m[4] + m[1]) / s; y = 0.25 * s; z = (m[9] + m[6]) / s;
   } else {
     const s = Math.sqrt(1 + m[10] - m[0] - m[5]) * 2;
-    w = (m[4] - m[1]) / s; x = (m[2] + m[8]) / s; y = (m[6] + m[9]) / s; z = 0.25 * s;
+    w = (m[1] - m[4]) / s; x = (m[8] + m[2]) / s; y = (m[9] + m[6]) / s; z = 0.25 * s;
   }
   const length = Math.hypot(x, y, z, w) || 1;
   return {
@@ -139,6 +141,7 @@ export function planMOVLTrajectory(startPose, endPose, speed, ikSolver, options 
         method: config.method,
         posTol: config.posTol,
         rotTol: config.rotTol,
+        rotWeight: config.rotWeight,
         maxIterations: config.maxIterations,
       });
     } catch (error) {
