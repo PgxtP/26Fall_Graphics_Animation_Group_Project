@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="data:,">
+  <title>机械臂仿真实验台</title>
+  <link rel="stylesheet" href="./css/style.css">
+  <script type="importmap">{"imports":{"three":"./js/vendor/three/build/three.module.js","three/addons/":"./js/vendor/three/addons/"}}</script>
+  <script type="module" src="./js/main.js"></script>
+</head>
+<body>
+<main class="workspace">
+  <aside class="panel" aria-label="示教器">
+    <div class="panel-heading"><p class="eyebrow">ROBOT ARM</p><h1>示教器</h1><p class="hint">先使能，再按住 ＋ / − 移动关节。</p></div>
+    <div class="motion-toolbar">
+      <label class="enable"><input id="motion-enable" type="checkbox"> 允许机械臂运动</label>
+      <div class="button-row"><button id="estop" class="danger" aria-pressed="false">急停</button><button id="release-estop" class="secondary">解除急停</button></div>
+      <label class="speed-label" for="speed-override">运动速度 <output id="speed-value">25%</output></label>
+      <input id="speed-override" type="range" min="10" max="100" value="25">
+      <div class="button-row"><select id="jog-mode" aria-label="点动模式"><option value="jog">按住点动</option><option value="inch">单次增量</option></select><select id="inch-step" aria-label="增量步长"><option value="0.1">0.1°</option><option value="1" selected>1°</option><option value="5">5°</option></select></div>
+      <p id="motion-status" role="status">当前未使能。勾选上方开关后可操作。</p>
+    </div>
+    <div id="joint-controls"></div>
+    <div class="button-row"><button id="stop-motion" class="secondary">停止运动</button><button id="reset-joints" class="secondary">回到零位</button></div>
+    <section class="pose-summary"><h2>工具尖端当前位置</h2><output id="tcp-position">等待模型加载</output><p class="hint">世界坐标 · 模型单位</p><details><summary>完整位置与姿态</summary><pre id="tcp-pose">等待模型</pre><p class="hint">RPY 为固定轴 ZYX、角度制。模型长度尚未换算为米。</p></details></section>
+  </aside>
+  <section class="scene-area" aria-label="机械臂工作区">
+    <header class="scene-header"><div><h2>机械臂仿真实验台</h2><p id="scene-status" role="status">正在加载机械臂…</p></div><button id="reset-view" class="secondary">重置视角</button></header>
+    <nav class="task-tabs" role="tablist" aria-label="实验任务">
+      <button id="tab-operation" role="tab" aria-controls="task-operation" aria-selected="true" data-task="operation">机械臂操作</button>
+      <button id="tab-program" role="tab" aria-controls="task-program" aria-selected="false" data-task="program">示教编程</button>
+      <button id="tab-tcp" role="tab" aria-controls="task-tcp" aria-selected="false" data-task="tcp">TCP 标定</button>
+      <button id="tab-frame" role="tab" aria-controls="task-frame" aria-selected="false" data-task="frame">用户坐标系</button>
+      <button id="tab-workstation" role="tab" aria-controls="task-workstation" aria-selected="false" data-task="workstation">工位场景</button>
+      <button id="tab-analysis" role="tab" aria-controls="task-analysis" aria-selected="false" data-task="analysis">轨迹分析</button>
+      <button id="tab-cloud" role="tab" aria-controls="task-cloud" aria-selected="false" data-task="cloud">可达区域</button>
+    </nav>
+    <div class="scene-view"><section id="viewport" aria-label="三维场景"></section><p class="view-help">左键旋转 · 滚轮缩放 · 右键平移</p></div>
+    <div id="task-operation" role="tabpanel" aria-labelledby="tab-operation"></div>
+    <div class="task-workbench" hidden>
+      <section id="task-program" role="tabpanel" aria-labelledby="tab-program" hidden>
+        <div class="task-heading"><h2>示教编程与连续执行</h2><p>记录至少4个位姿 → 用 MOVJ 串联 → 连续执行。也可载入 25 点 TCP 圆周扫描预设，由逆运动学求解 J1～J4，J5 同步旋转一周。</p></div>
+        <div class="task-columns">
+          <section class="step"><h3>1. 记录位姿</h3><p class="hint">用左侧示教器调整姿态，停止后记录当前五个关节角。</p><div class="button-row"><button id="record-pose">记录当前位姿</button><button id="undo-pose" class="secondary">撤销最后一个</button></div><p id="pose-count">已记录0个位姿</p><div class="pose-table"><table><thead><tr><th>位姿</th><th>J1</th><th>J2</th><th>J3</th><th>J4</th><th>J5</th></tr></thead><tbody id="pose-list"></tbody></table></div><p class="hint">表内角度单位：度</p><button id="clear-poses" class="secondary">清空位姿与程序</button></section>
+          <section class="step"><h3>2. 编排 MOVJ 程序</h3><button id="generate-movj" class="secondary">按记录顺序生成程序</button><label for="movj-code">每行一条指令，例如 MOVJ P1</label><textarea id="movj-code" rows="7" spellcheck="false" placeholder="MOVJ P1&#10;MOVJ P2&#10;MOVJ P3&#10;MOVJ P4"></textarea>
+          <div class="button-row">
+              <button id="export-program" class="secondary">导出位姿程序 JSON</button>
+              <button id="import-program-button" class="secondary">导入位姿程序 JSON</button>
+              <input id="import-program" type="file" accept=".json,application/json" hidden>
+          </div>
+          <button id="scan-program" class="secondary">载入 360° TCP 环绕扫描（25 个位姿）</button></section>
+          <section class="step"><h3>3. 连续执行</h3><p class="hint">先在左侧允许机械臂运动。五个关节同步插值到达每个位姿，再执行下一条。速度使用左侧倍率。</p><div class="button-row"><button id="run-program">执行程序</button><button id="stop-program" class="secondary">停止程序</button></div><p id="program-status" class="result" role="status">尚未执行</p><p class="hint">先定位至 P1，再沿水平圆周依次执行 P2～P25，使 TCP 绕中心一周，J5 同步旋转 360°。轨迹分析会自动记录；MOVJ 段间为关节插值，轨迹为圆的近似。急停、失能或切换任务会中断执行。</p></section>
+        </div>
+      </section>
+      <section id="task-tcp" role="tabpanel" aria-labelledby="tab-tcp" hidden>
+        <div class="task-heading"><h2>TCP 工具偏移</h2><p>按分工输入已知的工具平移和姿态，生成工具→法兰偏移矩阵；不需要固定尖端或逆运动学。</p></div>
+        <div class="task-columns"><section class="step"><h3>1. 输入已知工具参数</h3><label>相对法兰的平移 dx,dy,dz（模型单位）<input id="tcp-translation" value="0,0,0"></label><label>相对法兰的 RPY（度）<input id="tcp-rotation" value="0,0,0"></label></section><section class="step"><h3>2. 应用工具偏移</h3><button id="apply-known-tcp">应用已知 TCP 偏移</button><p class="hint">应用后可直接采集工件三个不同标记点。这里配置的是已知安装参数，不是由测量辨识未知工具。</p></section><section class="step"><h3>3. 查看偏移矩阵</h3><pre id="known-tcp-result" class="result">尚未应用已知参数。</pre></section></div>
+      </section>
+      <section id="task-workstation" role="tabpanel" aria-labelledby="tab-workstation" hidden><div class="task-heading"><h2>工作台与物块</h2><p>工业工作台使用老师的 table1.glb。物块顶面有 O（黄）、Px（红）、Pxy（蓝）三个标记。</p></div><div class="task-columns"><section class="step"><h3>挂载</h3><p class="hint">停止运动后，点击按钮会将物块从桌面瞬移到当前 TCP，并挂到法兰下随关节运动。此功能只演示挂载关系，不会让机械臂走到桌面抓取物块。</p><button id="attach-workpiece">将物块挂载到当前 TCP</button></section><section class="step"><h3>放回</h3><p class="hint">解除法兰挂载，将物块放回桌面的固定放置点。</p><button id="detach-workpiece" class="secondary">解除挂载并放回工作台</button></section><section class="step"><h3>状态</h3><p id="workstation-status" class="result">物块在工作台上，尚未挂载</p><p class="hint">三点法可在“用户坐标系”中读取物块的三个几何标记坐标。</p></section></div></section>
+      <section id="task-frame" role="tabpanel" aria-labelledby="tab-frame" hidden>
+        <div class="task-heading"><h2>用户坐标系：用三个点确定工件的原点和方向</h2><p>先应用 TCP，再用左侧示教器移动到三个标记点并采集；也可以填写已知世界坐标。</p></div>
+        <div class="task-columns">
+          <section class="step"><h3>1. 记录三个点</h3><label>O：工件原点<input id="frame-o" placeholder="世界坐标 x,y,z"></label><button id="capture-o" class="secondary">记录当前尖端为 O</button><label>X：正 X 方向上的点<input id="frame-x" placeholder="世界坐标 x,y,z"></label><button id="capture-x" class="secondary">记录当前尖端为 X 点</button><label>XY：平面内正 Y 一侧的点<input id="frame-xy" placeholder="世界坐标 x,y,z"></label><button id="capture-xy" class="secondary">记录当前尖端为 XY 点</button><button id="use-workpiece-points">读取物块 O / Px / Pxy 标记</button></section>
+          <section class="step"><h3>2. 建立坐标系</h3><p class="hint">三个点不能重合或共线。建立后，场景中显示用户坐标轴。</p><button id="solve-frame">建立并验证用户坐标系</button><pre id="frame-result" class="result">尚未建立用户坐标系。</pre><details><summary>查看坐标变换矩阵</summary><pre id="frame-matrix">尚无结果</pre></details></section>
+          <section class="step"><h3>3. 验证坐标变换</h3><label>独立验证点的世界坐标<input id="verify-point" value="1,2,3"></label><button id="verify-frame">验证坐标转换</button><pre id="frame-validation" class="result">尚未验证</pre><p class="hint">检查世界 → 用户 → 世界的数值一致性。实际标定精度还需要与已知标记点比较。</p></section>
+        </div>
+      </section>
+      <section id="task-analysis" role="tabpanel" aria-labelledby="tab-analysis" hidden>
+        <div class="task-heading"><h2>轨迹分析（实验要求 c）</h2><p>记录真实场景里 tcp 节点的运动，绘制轨迹路径与位置 / 速度-时间曲线，分析插值效果与运动平滑性。</p></div>
+        <div class="analysis-layout">
+          <div class="analysis-side">
+            <section class="step">
+              <h3>1. 记录</h3>
+              <p class="hint">执行「示教编程」的 360° 扫描会自动记录；其他程序可先在这里开始记录。数据来自真实 TCP 节点。</p>
+              <button id="tc-start">● 开始记录</button>
+              <div class="button-row"><button id="tc-stop" class="secondary">停止</button><button id="tc-clear" class="secondary">清空</button></div>
+              <button id="tc-csv" class="secondary">导出 CSV</button>
+              <p id="tc-status" class="result" role="status">未开始。</p>
+            </section>
+            <section class="step">
+              <h3>2. 统计</h3>
+              <dl>
+                <dt>采样点</dt><dd id="tc-count">0</dd>
+                <dt>时长</dt><dd id="tc-duration">0 s</dd>
+                <dt>最大速度</dt><dd id="tc-vmax">0</dd>
+                <dt>平均速度</dt><dd id="tc-vavg">0</dd>
+                <dt>轨迹长度</dt><dd id="tc-path">0</dd>
+              </dl>
+              <p class="hint">单位：资产单位（模型尚未换算为米）。</p>
+            </section>
+          </div>
+          <div class="analysis-chart" id="tc-chart"></div>
+        </div>
+      </section>
+      <section id="task-cloud" role="tabpanel" aria-labelledby="tab-cloud" hidden>
+        <div class="task-heading"><h2>可达区域（实验要求 d）</h2><p>按真实关节限位随机采样 2 万组角度，用场景树正运动学求 TCP 点云，统计边界与不可达空洞。</p></div>
+        <div class="task-columns">
+          <section class="step">
+            <h3>1. 采样</h3>
+            <label>采样点数<input id="wc-input" type="number" value="20000" min="1000" max="50000" step="1000"></label>
+            <button id="wc-generate">生成点云</button>
+            <div class="button-row"><button id="wc-remove" class="secondary">从场景移除</button></div>
+            <p id="wc-status" class="result" role="status">尚未生成。</p>
+          </section>
+          <section class="step">
+            <h3>2. 显示</h3>
+            <label class="enable"><input id="wc-visible" type="checkbox" checked> 在场景中显示点云</label>
+            <p class="hint">点云挂在主场景里，左键拖拽旋转、滚轮缩放查看整体形状。</p>
+          </section>
+          <section class="step">
+            <h3>3. 边界与空洞</h3>
+            <dl>
+              <dt>点数</dt><dd id="wc-points">—</dd>
+              <dt>半径范围</dt><dd id="wc-radius">—</dd>
+              <dt>高度范围</dt><dd id="wc-height">—</dd>
+              <dt>空腔占比</dt><dd id="wc-void">—</dd>
+              <dt>最大空洞</dt><dd id="wc-hole">—</dd>
+              <dt>工件原点</dt><dd id="wc-workpiece">—</dd>
+            </dl>
+            <p class="hint">工件原点取自工位场景中的 O 标记点（mark-O）。</p>
+          </section>
+        </div>
+      </section>
+    </div>
+  </section>
+</main>
+  <script type="module" src="./js/analysis/analysis-panel.js"></script>
+</body>
+</html>
+
+
+
