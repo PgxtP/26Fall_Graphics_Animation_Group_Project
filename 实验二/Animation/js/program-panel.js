@@ -181,8 +181,10 @@ export function bindProgram(api, motion) {
     });
   };
 
+  let holdDSLStatus = false;
   const showDSLParse = () => {
     if (!dslCode || !dslStatusEl) return;
+    holdDSLStatus = true;
     const parsed = parseDSLScript(dslCode.value, poses);
     if (parsed.ok) {
       dslStatusEl.textContent = `语法检查通过：展开后 ${parsed.instructions.length} 条指令，引用位姿 ${parsed.poseNames.join('、') || '无'}`;
@@ -203,12 +205,21 @@ export function bindProgram(api, motion) {
   action('dsl-run', () => {
     if (!dslCode) return;
     try {
+      holdDSLStatus = false;
       runner.start(dslCode.value, poses, { poseOfAngles });
       renderDSLInstructions(runner.state.instructions);
       status.textContent = runner.state.message;
-      if (dslStatusEl) dslStatusEl.textContent = '状态机：RUNNING · ' + runner.state.message;
+      if (dslStatusEl) {
+        if (runner.state.running) {
+          dslStatusEl.textContent = '状态机：RUNNING · ' + runner.state.message;
+        } else {
+          holdDSLStatus = true;
+          dslStatusEl.textContent = `状态机：${runner.state.status} · ${runner.state.message}`;
+        }
+      }
       previousDSLStatus = '';
     } catch (error) {
+      holdDSLStatus = true;
       if (dslStatusEl) dslStatusEl.textContent = '无法执行：' + error.message;
       throw error;
     }
@@ -315,13 +326,17 @@ export function bindProgram(api, motion) {
     const dslResume = document.getElementById('dsl-resume');
     if (dslResume) dslResume.disabled = !paused;
     if (dslStatusEl) {
-      const total = runner.state.instructions.length;
-      const line = runner.state.instructions[runner.state.index]?.line;
-      const text = `状态机：${runner.state.status}`
-        + (total ? ` · 第 ${Math.min(runner.state.index + 1, total)}/${total} 条` : '')
-        + (line ? ` · 源文件第 ${line} 行` : '')
-        + (runner.state.lastMOVL?.ok ? ` · MOVL ${runner.state.lastMOVL.sampleCount} 个插补点` : '');
-      if (text !== previousDSLStatus) { previousDSLStatus = text; dslStatusEl.textContent = text; }
+      if (running) holdDSLStatus = false;
+      if (!holdDSLStatus) {
+        const total = runner.state.instructions.length;
+        const line = runner.state.instructions[runner.state.index]?.line;
+        const text = `状态机：${runner.state.status}`
+          + (total ? ` · 第 ${Math.min(runner.state.index + 1, total)}/${total} 条` : '')
+          + (line ? ` · 源文件第 ${line} 行` : '')
+          + (runner.state.lastMOVL?.ok ? ` · MOVL ${runner.state.lastMOVL.sampleCount} 个插补点` : '')
+          + (!running && runner.state.status === DSL_STATUS.IDLE && runner.state.message ? ` · ${runner.state.message}` : '');
+        if (text !== previousDSLStatus) { previousDSLStatus = text; dslStatusEl.textContent = text; }
+      }
     }
     [...table.rows].forEach((row) => {
       const name = runner.state.instructions[runner.state.index]?.name;

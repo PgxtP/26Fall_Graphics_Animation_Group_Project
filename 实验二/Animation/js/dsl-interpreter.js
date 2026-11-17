@@ -293,11 +293,14 @@ export function createDSLRunner(api, motion, env = {}) {
           state.message = `执行第 ${instruction.line} 行：MOVL ${instruction.name}（插补点 1/${moving.samples.length}）`;
           return;
         }
-        case 'GRIP':
-          grip(instruction.value);
+        case 'GRIP': {
+          const gripResult = grip(instruction.value);
           motionPending = false;
-          state.message = `执行第 ${instruction.line} 行：GRIP ${instruction.value}（${instruction.value ? '夹紧' : '松开'}）${position()}`;
+          const emptyGrip = Boolean(instruction.value) && gripResult && gripResult.attached === false;
+          const detail = emptyGrip ? '空夹：距物块超出抓取容差' : (instruction.value ? '夹紧' : '松开');
+          state.message = `执行第 ${instruction.line} 行：GRIP ${instruction.value}（${detail}）${position()}`;
           return;
+        }
         case 'WAIT':
           waiting = { until: clock() + instruction.seconds * 1000 };
           motionPending = false;
